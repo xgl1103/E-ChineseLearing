@@ -1,0 +1,713 @@
+{
+  "lesson_id": "demo_001",
+  "metadata": {
+    "student_name": "Alex Chen",
+    "student_age": 10,
+    "student_level": "YCT 3",
+    "course_type": "Kids Chinese",
+    "lesson_topic": "餐厅点餐",
+    "lesson_duration_minutes": 45,
+    "teacher_name": "Ms. Lin",
+    "lesson_date": "2026-07-09",
+    "recording_mode": "dual_track",
+    "audio_tracks": {
+      "teacher": "mock://audio/demo_001/teacher_audio.wav",
+      "student": "mock://audio/demo_001/student_audio.wav"
+    }
+  },
+  "transcripts": {
+    "teacher": [
+      {
+        "segment_id": "t_001",
+        "speaker": "teacher",
+        "start_time": 12.4,
+        "end_time": 20.2,
+        "text": "Today we are practicing how to order food in Chinese. The key sentence is 我想要...",
+        "language_tags": ["en", "zh-CN"],
+        "asr_confidence": 0.96
+      },
+      {
+        "segment_id": "t_002",
+        "speaker": "teacher",
+        "start_time": 26.0,
+        "end_time": 33.8,
+        "text": "For drinks, we usually use the measure word 杯. Please repeat after me: 我想要一杯果汁。",
+        "language_tags": ["en", "zh-CN"],
+        "asr_confidence": 0.94
+      },
+      {
+        "segment_id": "t_003",
+        "speaker": "teacher",
+        "start_time": 45.0,
+        "end_time": 51.6,
+        "text": "How do you say 'I want a cup of juice' in Chinese?",
+        "language_tags": ["en"],
+        "asr_confidence": 0.97
+      },
+      {
+        "segment_id": "t_004",
+        "speaker": "teacher",
+        "start_time": 58.1,
+        "end_time": 67.2,
+        "text": "Good try. Here we say 一杯果汁, not 一个果汁. 杯 is used for a cup or glass of drink.",
+        "language_tags": ["en", "zh-CN"],
+        "asr_confidence": 0.95
+      },
+      {
+        "segment_id": "t_005",
+        "speaker": "teacher",
+        "start_time": 82.3,
+        "end_time": 92.5,
+        "text": "Because 果汁 is a drink. In Chinese, drinks often use 杯. For noodles, we can say 一碗面条 or 一份面条.",
+        "language_tags": ["en", "zh-CN"],
+        "asr_confidence": 0.93
+      },
+      {
+        "segment_id": "t_006",
+        "speaker": "teacher",
+        "start_time": 108.4,
+        "end_time": 116.2,
+        "text": "Now try a full order: 我想要一杯果汁和一份面条。",
+        "language_tags": ["en", "zh-CN"],
+        "asr_confidence": 0.94
+      },
+      {
+        "segment_id": "t_007",
+        "speaker": "teacher",
+        "start_time": 134.0,
+        "end_time": 143.8,
+        "text": "Nice. After class, please record yourself reading 我想要一杯果汁和一份面条 five times.",
+        "language_tags": ["en", "zh-CN"],
+        "asr_confidence": 0.92
+      },
+      {
+        "segment_id": "t_008",
+        "speaker": "teacher",
+        "start_time": 145.1,
+        "end_time": 154.6,
+        "text": "Also review these words: 杯, 份, 碗, 果汁, 面条, 多少钱.",
+        "language_tags": ["en", "zh-CN"],
+        "asr_confidence": 0.93
+      },
+      {
+        "segment_id": "t_009",
+        "speaker": "teacher",
+        "start_time": 168.0,
+        "end_time": 176.4,
+        "text": "Next lesson, we will practice asking the price with 多少钱 and ordering without spicy food.",
+        "language_tags": ["en", "zh-CN"],
+        "asr_confidence": 0.95
+      }
+    ],
+    "student": [
+      {
+        "segment_id": "s_001",
+        "speaker": "student",
+        "start_time": 35.0,
+        "end_time": 38.1,
+        "text": "我想要一杯果汁。",
+        "language_tags": ["zh-CN"],
+        "asr_confidence": 0.91
+      },
+      {
+        "segment_id": "s_002",
+        "speaker": "student",
+        "start_time": 52.8,
+        "end_time": 56.5,
+        "text": "我想要一个果汁。",
+        "language_tags": ["zh-CN"],
+        "asr_confidence": 0.9
+      },
+      {
+        "segment_id": "s_003",
+        "speaker": "student",
+        "start_time": 70.4,
+        "end_time": 74.2,
+        "text": "为什么用“杯”？",
+        "language_tags": ["zh-CN"],
+        "asr_confidence": 0.88
+      },
+      {
+        "segment_id": "s_004",
+        "speaker": "student",
+        "start_time": 119.6,
+        "end_time": 124.4,
+        "text": "我想要一杯果汁和一份面条。",
+        "language_tags": ["zh-CN"],
+        "asr_confidence": 0.89
+      },
+      {
+        "segment_id": "s_005",
+        "speaker": "student",
+        "start_time": 157.3,
+        "end_time": 160.2,
+        "text": "多少钱？",
+        "language_tags": ["zh-CN"],
+        "asr_confidence": 0.86
+      }
+    ]
+  },
+  "practice_clips": [
+    {
+      "clip_id": "clip_001",
+      "student_segment_id": "s_001",
+      "audio_uri": "mock://audio/demo_001/student_035000_038100.wav",
+      "clip_start": 34.7,
+      "clip_end": 38.6,
+      "reference_text": "我想要一杯果汁",
+      "reference_source": "teacher_repeat_instruction",
+      "reference_confidence": "high",
+      "should_assess_pronunciation": true
+    },
+    {
+      "clip_id": "clip_002",
+      "student_segment_id": "s_002",
+      "audio_uri": "mock://audio/demo_001/student_052800_056500.wav",
+      "clip_start": 52.5,
+      "clip_end": 57.0,
+      "reference_text": "我想要一杯果汁",
+      "reference_source": "teacher_question_expected_answer",
+      "reference_confidence": "medium",
+      "should_assess_pronunciation": true
+    },
+    {
+      "clip_id": "clip_003",
+      "student_segment_id": "s_004",
+      "audio_uri": "mock://audio/demo_001/student_119600_124400.wav",
+      "clip_start": 119.3,
+      "clip_end": 124.9,
+      "reference_text": "我想要一杯果汁和一份面条",
+      "reference_source": "teacher_model_sentence",
+      "reference_confidence": "high",
+      "should_assess_pronunciation": true
+    },
+    {
+      "clip_id": "clip_004",
+      "student_segment_id": "s_005",
+      "audio_uri": "mock://audio/demo_001/student_157300_160200.wav",
+      "clip_start": 157.0,
+      "clip_end": 160.7,
+      "reference_text": "多少钱",
+      "reference_source": "course_keyword",
+      "reference_confidence": "medium",
+      "should_assess_pronunciation": true
+    }
+  ],
+  "pronunciation_assessments": [
+    {
+      "assessment_id": "pa_001",
+      "clip_id": "clip_001",
+      "reference_text": "我想要一杯果汁",
+      "pronunciation_score": 82,
+      "accuracy_score": 80,
+      "fluency_score": 86,
+      "completeness_score": 100,
+      "prosody_score": 78,
+      "low_score_words": [
+        {
+          "word": "果汁",
+          "accuracy_score": 66,
+          "error_type": "Mispronunciation",
+          "note": "模型仅定位到该词发音分较低，具体声母或声调问题需老师确认。"
+        }
+      ],
+      "model_confidence": "medium",
+      "teacher_confirmation_required": true
+    },
+    {
+      "assessment_id": "pa_002",
+      "clip_id": "clip_002",
+      "reference_text": "我想要一杯果汁",
+      "pronunciation_score": 74,
+      "accuracy_score": 71,
+      "fluency_score": 80,
+      "completeness_score": 83,
+      "prosody_score": 72,
+      "low_score_words": [
+        {
+          "word": "一杯",
+          "accuracy_score": 62,
+          "error_type": "ReferenceMismatch",
+          "note": "学生说成“一个”，该片段更适合用于量词纠错，不应直接解释为发音错误。"
+        }
+      ],
+      "model_confidence": "low",
+      "teacher_confirmation_required": true
+    },
+    {
+      "assessment_id": "pa_003",
+      "clip_id": "clip_003",
+      "reference_text": "我想要一杯果汁和一份面条",
+      "pronunciation_score": 79,
+      "accuracy_score": 76,
+      "fluency_score": 84,
+      "completeness_score": 100,
+      "prosody_score": 75,
+      "low_score_words": [
+        {
+          "word": "面条",
+          "accuracy_score": 69,
+          "error_type": "Mispronunciation",
+          "note": "建议下节课回听并确认“条”的发音。"
+        }
+      ],
+      "model_confidence": "medium",
+      "teacher_confirmation_required": true
+    },
+    {
+      "assessment_id": "pa_004",
+      "clip_id": "clip_004",
+      "reference_text": "多少钱",
+      "pronunciation_score": 84,
+      "accuracy_score": 82,
+      "fluency_score": 88,
+      "completeness_score": 100,
+      "prosody_score": 80,
+      "low_score_words": [],
+      "model_confidence": "medium",
+      "teacher_confirmation_required": false
+    }
+  ],
+  "evidence": {
+    "knowledge_points": [
+      {
+        "evidence_id": "ev_kp_001",
+        "type": "knowledge_point",
+        "source_segment_ids": ["t_001"],
+        "timestamp": "00:12",
+        "claim": "本节课学习餐厅点餐场景中的“我想要...”句型。",
+        "confidence": "high"
+      },
+      {
+        "evidence_id": "ev_kp_002",
+        "type": "knowledge_point",
+        "source_segment_ids": ["t_002", "t_005"],
+        "timestamp": "00:26",
+        "claim": "本节课重点学习饮料量词“杯”，并对比“份”“碗”的使用。",
+        "confidence": "high"
+      },
+      {
+        "evidence_id": "ev_kp_003",
+        "type": "knowledge_point",
+        "source_segment_ids": ["t_009", "s_005"],
+        "timestamp": "02:37",
+        "claim": "学生开始练习询问价格“多少钱”。",
+        "confidence": "medium"
+      }
+    ],
+    "teacher_questions": [
+      {
+        "evidence_id": "ev_tq_001",
+        "type": "teacher_question",
+        "source_segment_ids": ["t_003"],
+        "timestamp": "00:45",
+        "claim": "老师提问：How do you say 'I want a cup of juice' in Chinese?",
+        "confidence": "high"
+      }
+    ],
+    "student_questions": [
+      {
+        "evidence_id": "ev_sq_001",
+        "type": "student_question",
+        "source_segment_ids": ["s_003"],
+        "timestamp": "01:10",
+        "claim": "学生主动提问为什么用“杯”而不是“个”。",
+        "confidence": "high"
+      }
+    ],
+    "corrections": [
+      {
+        "evidence_id": "ev_cr_001",
+        "type": "correction",
+        "source_segment_ids": ["s_002", "t_004"],
+        "timestamp": "00:52",
+        "student_original": "我想要一个果汁",
+        "teacher_correction": "一杯果汁",
+        "claim": "学生把饮料量词说成“一个”，老师纠正为“一杯果汁”。",
+        "confidence": "high"
+      }
+    ],
+    "homework": [
+      {
+        "evidence_id": "ev_hw_001",
+        "type": "homework",
+        "source_segment_ids": ["t_007"],
+        "timestamp": "02:14",
+        "claim": "老师布置录音作业：课后朗读“我想要一杯果汁和一份面条”五遍。",
+        "confidence": "high"
+      },
+      {
+        "evidence_id": "ev_hw_002",
+        "type": "homework",
+        "source_segment_ids": ["t_008"],
+        "timestamp": "02:25",
+        "claim": "老师布置词汇复习：杯、份、碗、果汁、面条、多少钱。",
+        "confidence": "high"
+      }
+    ],
+    "pronunciation": [
+      {
+        "evidence_id": "ev_pr_001",
+        "type": "pronunciation",
+        "source_segment_ids": ["s_001"],
+        "timestamp": "00:35",
+        "assessment_id": "pa_001",
+        "claim": "“果汁”在发音评估中得分较低，具体问题需老师确认。",
+        "confidence": "medium"
+      },
+      {
+        "evidence_id": "ev_pr_002",
+        "type": "pronunciation",
+        "source_segment_ids": ["s_004"],
+        "timestamp": "01:59",
+        "assessment_id": "pa_003",
+        "claim": "完整句跟读流利度较好，“面条”得分偏低，需老师确认。",
+        "confidence": "medium"
+      },
+      {
+        "evidence_id": "ev_pr_003",
+        "type": "pronunciation_boundary",
+        "source_segment_ids": ["s_002", "t_004"],
+        "timestamp": "00:52",
+        "assessment_id": "pa_002",
+        "claim": "学生说成“我想要一个果汁”，该片段主要用于量词纠错；由于 reference_text 与学生实际表达不一致，不应写成确定发音错误。",
+        "confidence": "low"
+      }
+    ]
+  },
+  "confidence_scores": {
+    "homework_extraction": "high",
+    "student_question_extraction": "high",
+    "correction_extraction": "high",
+    "pronunciation_reference_text": "medium",
+    "pronunciation_feedback": "medium",
+    "pronunciation_mismatch_clip": "low",
+    "candidate_homework_generation": "medium",
+    "teacher_review_readiness": "medium",
+    "overall_report_reliability": "high"
+  },
+  "draft_report": {
+    "lesson_summary": "本节课围绕餐厅点餐展开，重点练习“我想要...”句型、饮料量词“杯”，以及“多少钱”的价格询问表达。",
+    "knowledge_points": [
+      {
+        "id": "kp_001",
+        "text": "句型：我想要...",
+        "source_evidence_id": "ev_kp_001",
+        "confidence": "high"
+      },
+      {
+        "id": "kp_002",
+        "text": "量词：饮料通常用“一杯”，食物可根据语境使用“一份”或“一碗”。",
+        "source_evidence_id": "ev_kp_002",
+        "confidence": "high"
+      },
+      {
+        "id": "kp_003",
+        "text": "价格询问：多少钱？",
+        "source_evidence_id": "ev_kp_003",
+        "confidence": "medium"
+      }
+    ],
+    "teacher_questions": [
+      {
+        "id": "tq_001",
+        "question": "How do you say 'I want a cup of juice' in Chinese?",
+        "source_evidence_id": "ev_tq_001",
+        "confidence": "high"
+      }
+    ],
+    "student_questions": [
+      {
+        "id": "sq_001",
+        "question": "为什么用“杯”？",
+        "summary": "学生主动询问为什么“果汁”要用量词“杯”而不是“个”。",
+        "source_evidence_id": "ev_sq_001",
+        "confidence": "high"
+      }
+    ],
+    "corrections": [
+      {
+        "id": "cr_001",
+        "student_original": "我想要一个果汁",
+        "teacher_correction": "我想要一杯果汁",
+        "explanation": "饮料类名词通常使用量词“杯”。",
+        "source_evidence_id": "ev_cr_001",
+        "confidence": "high"
+      }
+    ],
+    "pronunciation_feedback": [
+      {
+        "id": "pf_001",
+        "text": "AI 发音评估显示“果汁”的词级得分偏低。该结论来自发音评估结果，建议老师回听确认具体是声母、韵母还是声调问题。",
+        "assessment_id": "pa_001",
+        "source_evidence_id": "ev_pr_001",
+        "confidence": "medium",
+        "teacher_confirmation_required": true
+      },
+      {
+        "id": "pf_002",
+        "text": "完整句“我想要一杯果汁和一份面条”流利度较好，但“面条”词级得分偏低，建议下节课复查。",
+        "assessment_id": "pa_003",
+        "source_evidence_id": "ev_pr_002",
+        "confidence": "medium",
+        "teacher_confirmation_required": true
+      },
+      {
+        "id": "pf_003",
+        "text": "片段“我想要一个果汁”不应被直接解读为发音错误。它更可靠的用途是量词纠错；如需发音反馈，应由老师确认参考文本后再判断。",
+        "assessment_id": "pa_002",
+        "source_evidence_id": "ev_pr_003",
+        "confidence": "low",
+        "teacher_confirmation_required": true,
+        "is_candidate": true
+      }
+    ],
+    "homework_items": [
+      {
+        "homework_id": "hw_001",
+        "title": "录音跟读",
+        "description": "朗读 5 遍“我想要一杯果汁和一份面条”。",
+        "type": "recording",
+        "source_evidence_id": "ev_hw_001",
+        "confidence": "high",
+        "teacher_confirmed": false,
+        "teacher_confirmation_required": false,
+        "is_candidate": false
+      },
+      {
+        "homework_id": "hw_002",
+        "title": "词汇复习",
+        "description": "复习：杯、份、碗、果汁、面条、多少钱。",
+        "type": "vocabulary_review",
+        "source_evidence_id": "ev_hw_002",
+        "confidence": "high",
+        "teacher_confirmed": false,
+        "teacher_confirmation_required": false,
+        "is_candidate": false
+      },
+      {
+        "homework_id": "hw_003",
+        "title": "场景对话练习",
+        "description": "系统建议：用“我想要...”和“多少钱？”完成一次点餐对话。该项不是老师明确口头布置，需要老师确认后才能发送。",
+        "type": "dialogue_practice",
+        "source_evidence_id": "ev_kp_003",
+        "confidence": "medium",
+        "teacher_confirmed": false,
+        "teacher_confirmation_required": true,
+        "is_candidate": true
+      }
+    ],
+    "student_assessment": {
+      "overall_label": "表现积极，量词使用需要强化",
+      "participation": {
+        "level": "strong",
+        "comment": "学生能主动回答老师问题，并提出“为什么用杯”的问题。",
+        "source_evidence_ids": ["ev_sq_001", "ev_tq_001"]
+      },
+      "vocabulary": {
+        "level": "developing",
+        "comment": "已接触果汁、面条、多少钱等词汇，需要继续复习量词搭配。",
+        "source_evidence_ids": ["ev_kp_002", "ev_cr_001"]
+      },
+      "grammar": {
+        "level": "developing",
+        "comment": "“我想要...”句型基本可用，但量词从“一个”到“一杯”的迁移仍需练习。",
+        "source_evidence_ids": ["ev_cr_001"]
+      },
+      "pronunciation": {
+        "level": "needs_teacher_confirmation",
+        "comment": "发音反馈仅基于 pronunciation_assessments，重点词“果汁”“面条”建议老师确认。",
+        "source_evidence_ids": ["ev_pr_001", "ev_pr_002"]
+      }
+    },
+    "next_lesson_suggestions": [
+      {
+        "id": "nls_001",
+        "text": "用 5 分钟复习“一杯 / 一份 / 一碗”的量词搭配。",
+        "source_evidence_id": "ev_cr_001"
+      },
+      {
+        "id": "nls_002",
+        "text": "安排餐厅角色扮演，要求学生完成点餐和询价。",
+        "source_evidence_id": "ev_kp_003"
+      },
+      {
+        "id": "nls_003",
+        "text": "回听“果汁”和“面条”的发音片段，老师确认后再布置针对性发音练习。",
+        "source_evidence_id": "ev_pr_001"
+      }
+    ]
+  },
+  "rule_validation_result": {
+    "pass": true,
+    "blocking_issues": [],
+    "warnings": [
+      "rv_pronunciation_medium_confidence: 发音反馈为中置信，需要老师确认后再发送给学生或家长。related_ids=pa_001,pa_003",
+      "rv_pronunciation_low_confidence: pa_002 存在 reference mismatch，只能作为候选提醒，不可写成确定发音错误。related_ids=pa_002,ev_pr_003,pf_003",
+      "rv_homework_medium_confidence: 场景对话练习来自课程目标推导，建议老师确认是否作为正式作业。related_ids=hw_003,ev_kp_003"
+    ]
+  },
+  "review_result": {
+    "pass": true,
+    "score": 88,
+    "issues": [],
+    "revision_instruction": "",
+    "revision_count": 0,
+    "rubric_scores": {
+      "completeness": 92,
+      "evidence_grounding": 90,
+      "pronunciation_boundary": 86,
+      "homework_actionability": 90,
+      "parent_friendliness": 84,
+      "safety_and_privacy": 88
+    }
+  },
+  "risk_highlights": [
+    {
+      "risk_id": "risk_001",
+      "level": "medium",
+      "module": "pronunciation",
+      "message": "“果汁”和“面条”的发音反馈来自模型词级评分，具体声母、韵母或声调问题需老师确认。",
+      "related_ids": ["pa_001", "pa_003", "ev_pr_001", "ev_pr_002"],
+      "teacher_action": "confirm_or_edit"
+    },
+    {
+      "risk_id": "risk_002",
+      "level": "medium",
+      "module": "homework",
+      "message": "“场景对话练习”是系统生成的 candidate homework，基于课堂目标推导，不是老师明确口头布置，建议老师确认或删除。",
+      "related_ids": ["hw_003", "ev_kp_003"],
+      "teacher_action": "confirm_or_remove"
+    },
+    {
+      "risk_id": "risk_003",
+      "level": "low",
+      "module": "student_assessment",
+      "message": "学生表现评价为 AI 初评，最终应以老师确认为准。",
+      "related_ids": ["draft_report.student_assessment"],
+      "teacher_action": "confirm_or_edit"
+    },
+    {
+      "risk_id": "risk_004",
+      "level": "low",
+      "module": "pronunciation_boundary",
+      "message": "pa_002 的学生实际表达是“一个果汁”，与参考文本“一杯果汁”不一致。该片段只能支持量词纠错，不能作为确定发音问题发送。",
+      "related_ids": ["pa_002", "clip_002", "ev_pr_003", "pf_003"],
+      "teacher_action": "review_reference_or_ignore"
+    }
+  ],
+  "teacher_review": {
+    "status": "pending",
+    "reviewed_at": null,
+    "confirmed_homework_ids": [],
+    "confirmed_risk_ids": [],
+    "pending_confirmation_ids": ["risk_001", "risk_002", "risk_003", "risk_004", "hw_003", "pf_001", "pf_002", "pf_003"],
+    "teacher_notes": "",
+    "report_edits": {}
+  },
+  "final_reports": {
+    "teacher": {
+      "title": "老师版课后复盘",
+      "audience": "teacher",
+      "status": "draft_waiting_teacher_confirmation",
+      "sections": [
+        {
+          "heading": "课堂重点",
+          "content": [
+            "餐厅点餐句型：我想要...",
+            "饮料量词：一杯",
+            "食物量词对比：一份 / 一碗",
+            "价格询问：多少钱？"
+          ]
+        },
+        {
+          "heading": "课堂纠错",
+          "content": [
+            "学生说“我想要一个果汁”，老师纠正为“我想要一杯果汁”。"
+          ]
+        },
+        {
+          "heading": "待确认发音点",
+          "content": [
+            "“果汁”词级评分偏低，建议回听 00:35。",
+            "“面条”词级评分偏低，建议回听 01:59。",
+            "“我想要一个果汁”片段存在 reference mismatch，只能作为量词纠错证据，不能直接作为发音错误结论。"
+          ]
+        },
+        {
+          "heading": "下节课建议",
+          "content": [
+            "复习“一杯 / 一份 / 一碗”。",
+            "进行餐厅角色扮演，加入“多少钱？”问答。",
+            "老师确认发音问题后再布置针对性跟读。"
+          ]
+        }
+      ]
+    },
+    "student": {
+      "title": "Alex 的课后练习",
+      "audience": "student",
+      "status": "draft_waiting_teacher_confirmation",
+      "sections": [
+        {
+          "heading": "今天学了什么",
+          "content": [
+            "餐厅点餐句型：我想要...",
+            "重点表达：一杯果汁、一份面条、多少钱？"
+          ]
+        },
+        {
+          "heading": "需要复习",
+          "content": [
+            "饮料不要说“一个果汁”，要说“一杯果汁”。",
+            "继续练习“一杯 / 一份 / 一碗”的搭配。"
+          ]
+        },
+        {
+          "heading": "课后作业",
+          "content": [
+            "录音朗读 5 遍：我想要一杯果汁和一份面条。",
+            "复习词语：杯、份、碗、果汁、面条、多少钱。",
+            "如果老师确认，再完成一次点餐对话练习。"
+          ]
+        }
+      ]
+    },
+    "parent": {
+      "title": "Alex 本节课学习反馈",
+      "audience": "parent",
+      "status": "draft_waiting_teacher_confirmation",
+      "sections": [
+        {
+          "heading": "本节课进展",
+          "content": [
+            "Alex 今天学习了餐厅点餐相关表达，能够尝试用中文说出“我想要...”句型。",
+            "Alex 主动提问“为什么用‘杯’？”，说明他在认真理解中文量词规则。"
+          ]
+        },
+        {
+          "heading": "练习重点",
+          "content": [
+            "继续练习“一杯果汁”和“一份面条”。",
+            "本周可以提醒 Alex 完成 5 遍录音跟读。",
+            "系统生成的扩展对话练习和发音反馈都需老师确认后再作为正式练习重点。"
+          ]
+        },
+        {
+          "heading": "老师确认",
+          "content": [
+            "本报告为 AI 初稿，需老师确认后发送。"
+          ]
+        }
+      ]
+    }
+  },
+  "teacher_edit_log": [
+    {
+      "event_id": "log_001",
+      "event_type": "system_seed",
+      "timestamp": "2026-07-09T18:00:00+08:00",
+      "message": "Demo lesson initialized with pending teacher review."
+    }
+  ]
+}

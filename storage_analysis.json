@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-07-16",
+  "scan_seconds": 114.1,
+  "system": {
+    "os": "Windows 10",
+    "build": "10.0.19045",
+    "arch": "AMD64",
+    "user": "lenovo",
+    "home": "C:\\Users\\lenovo",
+    "filesystem": "NTFS",
+    "disk_total": "200.0 GB",
+    "disk_used": "200.0 GB",
+    "disk_free": "0 B",
+    "purgeable": "",
+    "disk_name": "C:\\",
+    "disks": [
+      {"name": "C:\\", "total": "200.0 GB", "used": "200.0 GB", "free": "0 B"},
+      {"name": "D:\\", "total": "275.7 GB", "used": "221.6 GB", "free": "54.1 GB"},
+      {"name": "F:\\", "total": "931.5 GB", "used": "686.2 GB", "free": "245.3 GB"}
+    ]
+  },
+  "top5": [
+    {"rank": 1, "tier": "yellow", "size": "79.6 GB", "type": "应用数据", "name": "C:\\Users\\lenovo\\AppData", "path": "C:\\Users\\lenovo\\AppData", "note": "应用数据总盘；Tencent、TRAE、WPS、JetBrains、剪映等长期累积。"},
+    {"rank": 2, "tier": "blue", "size": "32.1 GB", "type": "系统文件", "name": "C:\\Windows", "path": "C:\\Windows", "note": "WinSxS 11.6 GB、System32 9.8 GB，不能手删。"},
+    {"rank": 3, "tier": "blue", "size": "19.3 GB", "type": "系统/程序共享数据", "name": "C:\\ProgramData", "path": "C:\\ProgramData", "note": "NVIDIA App 更新包 8.0 GB、Lenovo 3.7 GB、Kingsoft 1.5 GB。"},
+    {"rank": 4, "tier": "yellow", "size": "8.0 GB", "type": "应用更新缓存", "name": "NVIDIA App ota-artifacts", "path": "C:\\ProgramData\\NVIDIA Corporation\\NVIDIA app\\UpdateFramework\\ota-artifacts", "note": "NVIDIA App 的 OTA 更新包缓存，最像可通过应用维护入口释放的累积项。"},
+    {"rank": 5, "tier": "yellow", "size": "7.9 GB", "type": "聊天/办公应用数据", "name": "Tencent", "path": "C:\\Users\\lenovo\\AppData\\Roaming\\Tencent", "note": "WXWork 3.3 GB、xwechat 1.4 GB、WeChat 1.0 GB，含用户数据，勿直接删。"}
+  ],
+  "green": [
+    {"name": "临时文件", "path": "C:\\Users\\lenovo\\AppData\\Local\\Temp", "size_estimate": "1.4 GB", "kill_processes": [], "trash_paths": [], "commands": [{"label": "打开临时目录检查", "cmd": "explorer.exe C:\\Users\\lenovo\\AppData\\Local\\Temp"}]},
+    {"name": "Clash Verge 日志", "path": "C:\\Users\\lenovo\\AppData\\Roaming\\io.github.clash-verge-rev.clash-verge-rev\\logs\\service", "size_estimate": "2.7 GB", "kill_processes": ["Clash Verge"], "trash_paths": [], "commands": [{"label": "打开日志目录", "cmd": "explorer.exe C:\\Users\\lenovo\\AppData\\Roaming\\io.github.clash-verge-rev.clash-verge-rev\\logs\\service"}]},
+    {"name": "开发工具缓存", "path": "C:\\Users\\lenovo\\.cache; C:\\Users\\lenovo\\.gradle; C:\\Users\\lenovo\\.codex\\.tmp", "size_estimate": "3.5 GB", "kill_processes": [], "trash_paths": [], "commands": [{"label": "打开开发缓存位置", "cmd": "explorer.exe C:\\Users\\lenovo\\.cache"}]},
+    {"name": "JetBrains 索引/缓存", "path": "C:\\Users\\lenovo\\AppData\\Local\\JetBrains", "size_estimate": "3.6 GB", "kill_processes": ["pycharm64.exe", "idea64.exe"], "trash_paths": [], "commands": [{"label": "打开 JetBrains 数据目录", "cmd": "explorer.exe C:\\Users\\lenovo\\AppData\\Local\\JetBrains"}]}
+  ],
+  "yellow": [
+    {"name": "NVIDIA App OTA 更新包", "path": "C:\\ProgramData\\NVIDIA Corporation\\NVIDIA app\\UpdateFramework\\ota-artifacts", "size": "8.0 GB", "content_profile": "驱动/App 更新包与安装工件", "why_manual": "可能包含当前或最近版本的回滚文件；应先在 NVIDIA App 内完成更新/清理，再考虑处理。", "disposal": "打开 NVIDIA App 检查更新与存储/下载管理；若无清理入口，再人工确认旧版本工件。", "risk": "直接删除可能导致回滚或下次更新失败。", "open_note": "这是本次最值得优先处理的单项。"},
+    {"name": "聊天与办公应用数据", "path": "C:\\Users\\lenovo\\AppData\\Roaming\\Tencent; C:\\Users\\lenovo\\AppData\\Roaming\\Kingsoft; C:\\Users\\lenovo\\AppData\\Roaming\\LarkShell", "size": "13.2 GB", "content_profile": "聊天记录、附件、离线文件、应用数据", "why_manual": "包含用户数据，不能按缓存目录一刀切。", "disposal": "分别在微信/WXWork/WPS/Lark 设置中清理缓存、下载目录和历史附件；重要资料先迁移到 D: 或 F:。", "risk": "误删可能丢失聊天记录、附件或登录状态。"},
+    {"name": "TRAE SOLO 与剪映数据", "path": "C:\\Users\\lenovo\\AppData\\Roaming\\TRAE SOLO CN; C:\\Users\\lenovo\\AppData\\Local\\JianyingPro", "size": "5.6 GB", "content_profile": "AI 模块/组件、素材组件、项目缓存", "why_manual": "可能包含项目、模型或可重新下载组件，需按应用判断。", "disposal": "在应用设置中清理缓存/组件；剪映先确认项目素材已导出或已迁移。", "risk": "直接删 User Data/ModularData 可能导致项目或组件丢失。"},
+    {"name": "Lenovo Vantage 与设备中心", "path": "C:\\ProgramData\\Lenovo", "size": "3.7 GB", "content_profile": "驱动、设备组件、厂商应用数据", "why_manual": "可能是驱动回滚包和硬件管理组件。", "disposal": "通过 Lenovo Vantage/设置中的更新与卸载入口处理，不要手删 ProgramData。", "risk": "可能影响热键、驱动更新和硬件管理。"}
+  ],
+  "red": [
+    {"name": "Windows 系统目录", "path": "C:\\Windows", "size": "32.1 GB", "why_keep": "WinSxS、System32、Installer 等是系统组件与安装维护存储。", "indirect_release": "设置 > 系统 > 存储 > 临时文件/存储感知；或管理员运行 cleanmgr、DISM /Online /Cleanup-Image /StartComponentCleanup。", "auto_reclaim": "启用存储感知并保留系统自动维护。"},
+    {"name": "已安装程序本体", "path": "C:\\Program Files; C:\\Program Files (x86)", "size": "26.6 GB", "why_keep": "程序本体不能通过删除目录来卸载。", "indirect_release": "设置 > 应用 > 已安装的应用，按大小卸载不再使用的软件/游戏。", "auto_reclaim": "优先把可迁移的游戏库和大型应用安装到 D: 或 F:。"}
+  ],
+  "denied": ["C:\\System Volume Information"],
+  "summary": {
+    "overview": "C 盘爆满不是单一 Windows 文件造成的，而是 AppData/ProgramData 中多套应用数据与更新缓存长期叠加；当前扫描显示 200 GB 已用满。",
+    "tier_stats": {"green": "7.2 GB", "yellow": "30.5 GB", "red": "58.7 GB"},
+    "priority": ["先处理 NVIDIA App ota-artifacts（约 8.0 GB），走 NVIDIA App 的更新/下载管理入口。", "关闭 Clash Verge 后检查并清理 2.7 GB service 日志。", "再分别处理 Tencent/WPS/Lark/剪映/TRAE 的缓存与离线文件，不要直接删除整个目录。", "Windows 系统空间用存储感知/磁盘清理/DISM 释放，禁止手删 WinSxS、System32、Installer。"],
+    "long_term": ["把 Docker/开发缓存、聊天附件和视频素材定期迁移到 D: 或 F:。", "限制 NVIDIA App、聊天软件和代理软件日志/下载保留周期。", "保持 C 盘至少 20 GB 空闲，避免系统更新和虚拟内存进入临界状态。"]
+  }
+}

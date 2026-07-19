@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preflight</title>
+    <style id="theme-vars">
+/* ============================================================
+   AI Lesson Recorder — Teacher Review Workspace
+   Design Direction: Warm, Friendly Education (教育温暖亲和风)
+   Brand Prefix: lr
+   ============================================================ */
+
+/* ---------- Color Tokens (Warm Education Palette) ---------- */
+:root {
+  /* Brand surfaces — warm cream / ivory */
+  --lr-background: #FBF6EC;          /* warm ivory page */
+  --lr-foreground: #3A3225;          /* warm ink brown */
+
+  --lr-card: #FFFFFF;               /* clean card */
+  --lr-card-foreground: #3A3225;
+
+  --lr-popover: #FFFFFF;
+  --lr-popover-foreground: #3A3225;
+
+  /* Primary — warm sage green (growth + education, friendly) */
+  --lr-primary: #5B9279;
+  --lr-primary-foreground: #FFFFFF;
+  --lr-primary-soft: #E6F0E9;       /* tinted surface for active/chips */
+  --lr-primary-press: #4D7E68;
+
+  /* Muted / neutral — warm taupe */
+  --lr-muted: #F2E9D8;              /* warm beige panel */
+  --lr-muted-foreground: #8A7C66;    /* warm taupe gray text */
+
+  /* Border — warm light beige */
+  --lr-border: #E8DCC6;
+  --lr-input: #E8DCC6;
+  --lr-ring: #5B9279;
+
+  /* Warm accent — peach (highlights, illustrations) */
+  --lr-accent: #E8A87C;
+  --lr-accent-soft: #FBE9DB;
+
+  /* Semantic — warm-tuned, not clinical */
+  --lr-warning: #E0A33E;            /* warm amber */
+  --lr-warning-soft: #FBEFD6;
+  --lr-danger: #E07856;              /* warm coral (risk) */
+  --lr-danger-soft: #FAE2D8;
+  --lr-success: #5B9279;
+  --lr-success-soft: #E6F0E9;
+  --lr-info: #6FA3B5;                /* muted warm teal-blue, used sparingly */
+  --lr-info-soft: #E2EEF1;
+
+  /* Radius scale — friendly, rounded */
+  --lr-radius-sm: 10px;
+  --lr-radius-md: 14px;
+  --lr-radius-lg: 20px;
+  --lr-radius-xl: 28px;
+
+  /* Shadows — soft, warm-tinted */
+  --lr-shadow-xs: 0 1px 2px rgba(58, 50, 37, 0.05);
+  --lr-shadow-sm: 0 2px 8px rgba(58, 50, 37, 0.06);
+  --lr-shadow-md: 0 6px 20px rgba(58, 50, 37, 0.08);
+  --lr-shadow-lg: 0 14px 38px rgba(58, 50, 37, 0.10);
+
+  /* Typography */
+  --lr-font-sans: "Plus Jakarta Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --lr-font-display: "Plus Jakarta Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --lr-font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+/* ---------- Tailwind theme inline mapping ---------- */
+@theme inline {
+  --color-background: var(--lr-background);
+  --color-foreground: var(--lr-foreground);
+  --color-card: var(--lr-card);
+  --color-card-foreground: var(--lr-card-foreground);
+  --color-popover: var(--lr-popover);
+  --color-popover-foreground: var(--lr-popover-foreground);
+  --color-primary: var(--lr-primary);
+  --color-primary-foreground: var(--lr-primary-foreground);
+  --color-muted: var(--lr-muted);
+  --color-muted-foreground: var(--lr-muted-foreground);
+  --color-border: var(--lr-border);
+  --color-input: var(--lr-input);
+  --color-ring: var(--lr-ring);
+  --color-accent: var(--lr-accent);
+  --color-warning: var(--lr-warning);
+  --color-danger: var(--lr-danger);
+  --color-success: var(--lr-success);
+  --color-info: var(--lr-info);
+
+  --font-sans: var(--lr-font-sans);
+  --font-display: var(--lr-font-display);
+  --font-mono: var(--lr-font-mono);
+
+  --radius-sm: var(--lr-radius-sm);
+  --radius-md: var(--lr-radius-md);
+  --radius-lg: var(--lr-radius-lg);
+  --radius-xl: var(--lr-radius-xl);
+}
+
+/* ---------- Semantic aliases for fill-html-head.mjs ---------- */
+:root {
+  --background: var(--lr-background);
+  --foreground: var(--lr-foreground);
+  --card: var(--lr-card);
+  --card-foreground: var(--lr-card-foreground);
+  --popover: var(--lr-popover);
+  --popover-foreground: var(--lr-popover-foreground);
+  --primary: var(--lr-primary);
+  --primary-foreground: var(--lr-primary-foreground);
+  --muted: var(--lr-muted);
+  --muted-foreground: var(--lr-muted-foreground);
+  --border: var(--lr-border);
+  --input: var(--lr-input);
+  --ring: var(--lr-ring);
+  --radius-sm: var(--lr-radius-sm);
+  --radius-md: var(--lr-radius-md);
+  --radius-lg: var(--lr-radius-lg);
+  --radius-xl: var(--lr-radius-xl);
+}
+
+/* ---------- Base ---------- */
+html { font-family: var(--lr-font-sans); }
+body {
+  background: var(--lr-background);
+  color: var(--lr-foreground);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--lr-background);
+    --color-foreground: var(--lr-foreground);
+    --color-card: var(--lr-card);
+    --color-card-foreground: var(--lr-card-foreground);
+    --color-popover: var(--lr-popover);
+    --color-popover-foreground: var(--lr-popover-foreground);
+    --color-primary: var(--lr-primary);
+    --color-primary-foreground: var(--lr-primary-foreground);
+    --color-muted: var(--lr-muted);
+    --color-muted-foreground: var(--lr-muted-foreground);
+    --color-accent: var(--lr-accent);
+    --color-border: var(--lr-border);
+    --color-input: var(--lr-input);
+    --color-ring: var(--lr-ring);
+    --radius-sm: var(--lr-radius-sm);
+    --radius-md: var(--lr-radius-md);
+    --radius-lg: var(--lr-radius-lg);
+    --radius-xl: var(--lr-radius-xl);
+  }
+  @layer base {
+    body { background: var(--lr-background); color: var(--lr-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--lr-background); }
+      .text-background { color: var(--lr-background); }
+      .border-background { border-color: var(--lr-background); }
+      .ring-background { --tw-ring-color: var(--lr-background); }
+      .bg-foreground { background-color: var(--lr-foreground); }
+      .text-foreground { color: var(--lr-foreground); }
+      .border-foreground { border-color: var(--lr-foreground); }
+      .ring-foreground { --tw-ring-color: var(--lr-foreground); }
+      .bg-card { background-color: var(--lr-card); }
+      .text-card { color: var(--lr-card); }
+      .border-card { border-color: var(--lr-card); }
+      .ring-card { --tw-ring-color: var(--lr-card); }
+      .bg-card-foreground { background-color: var(--lr-card-foreground); }
+      .text-card-foreground { color: var(--lr-card-foreground); }
+      .border-card-foreground { border-color: var(--lr-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--lr-card-foreground); }
+      .bg-popover { background-color: var(--lr-popover); }
+      .text-popover { color: var(--lr-popover); }
+      .border-popover { border-color: var(--lr-popover); }
+      .ring-popover { --tw-ring-color: var(--lr-popover); }
+      .bg-popover-foreground { background-color: var(--lr-popover-foreground); }
+      .text-popover-foreground { color: var(--lr-popover-foreground); }
+      .border-popover-foreground { border-color: var(--lr-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--lr-popover-foreground); }
+      .bg-primary { background-color: var(--lr-primary); }
+      .text-primary { color: var(--lr-primary); }
+      .border-primary { border-color: var(--lr-primary); }
+      .ring-primary { --tw-ring-color: var(--lr-primary); }
+      .bg-primary-foreground { background-color: var(--lr-primary-foreground); }
+      .text-primary-foreground { color: var(--lr-primary-foreground); }
+      .border-primary-foreground { border-color: var(--lr-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--lr-primary-foreground); }
+      .bg-muted { background-color: var(--lr-muted); }
+      .text-muted { color: var(--lr-muted); }
+      .border-muted { border-color: var(--lr-muted); }
+      .ring-muted { --tw-ring-color: var(--lr-muted); }
+      .bg-muted-foreground { background-color: var(--lr-muted-foreground); }
+      .text-muted-foreground { color: var(--lr-muted-foreground); }
+      .border-muted-foreground { border-color: var(--lr-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--lr-muted-foreground); }
+      .bg-accent { background-color: var(--lr-accent); }
+      .text-accent { color: var(--lr-accent); }
+      .border-accent { border-color: var(--lr-accent); }
+      .ring-accent { --tw-ring-color: var(--lr-accent); }
+      .bg-border { background-color: var(--lr-border); }
+      .text-border { color: var(--lr-border); }
+      .border-border { border-color: var(--lr-border); }
+      .ring-border { --tw-ring-color: var(--lr-border); }
+      .bg-input { background-color: var(--lr-input); }
+      .text-input { color: var(--lr-input); }
+      .border-input { border-color: var(--lr-input); }
+      .ring-input { --tw-ring-color: var(--lr-input); }
+      .bg-ring { background-color: var(--lr-ring); }
+      .text-ring { color: var(--lr-ring); }
+      .border-ring { border-color: var(--lr-ring); }
+      .ring-ring { --tw-ring-color: var(--lr-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

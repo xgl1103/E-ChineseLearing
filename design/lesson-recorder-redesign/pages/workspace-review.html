@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待确认项 · AI Lesson Recorder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style id="theme-vars">
+/* ============================================================
+   AI Lesson Recorder — Teacher Review Workspace
+   Design Direction: Warm, Friendly Education (教育温暖亲和风)
+   Brand Prefix: lr
+   ============================================================ */
+
+/* ---------- Color Tokens (Warm Education Palette) ---------- */
+:root {
+  /* Brand surfaces — warm cream / ivory */
+  --lr-background: #FBF6EC;          /* warm ivory page */
+  --lr-foreground: #3A3225;          /* warm ink brown */
+
+  --lr-card: #FFFFFF;               /* clean card */
+  --lr-card-foreground: #3A3225;
+
+  --lr-popover: #FFFFFF;
+  --lr-popover-foreground: #3A3225;
+
+  /* Primary — warm sage green (growth + education, friendly) */
+  --lr-primary: #5B9279;
+  --lr-primary-foreground: #FFFFFF;
+  --lr-primary-soft: #E6F0E9;       /* tinted surface for active/chips */
+  --lr-primary-press: #4D7E68;
+
+  /* Muted / neutral — warm taupe */
+  --lr-muted: #F2E9D8;              /* warm beige panel */
+  --lr-muted-foreground: #8A7C66;    /* warm taupe gray text */
+
+  /* Border — warm light beige */
+  --lr-border: #E8DCC6;
+  --lr-input: #E8DCC6;
+  --lr-ring: #5B9279;
+
+  /* Warm accent — peach (highlights, illustrations) */
+  --lr-accent: #E8A87C;
+  --lr-accent-soft: #FBE9DB;
+
+  /* Semantic — warm-tuned, not clinical */
+  --lr-warning: #E0A33E;            /* warm amber */
+  --lr-warning-soft: #FBEFD6;
+  --lr-danger: #E07856;              /* warm coral (risk) */
+  --lr-danger-soft: #FAE2D8;
+  --lr-success: #5B9279;
+  --lr-success-soft: #E6F0E9;
+  --lr-info: #6FA3B5;                /* muted warm teal-blue, used sparingly */
+  --lr-info-soft: #E2EEF1;
+
+  /* Radius scale — friendly, rounded */
+  --lr-radius-sm: 10px;
+  --lr-radius-md: 14px;
+  --lr-radius-lg: 20px;
+  --lr-radius-xl: 28px;
+
+  /* Shadows — soft, warm-tinted */
+  --lr-shadow-xs: 0 1px 2px rgba(58, 50, 37, 0.05);
+  --lr-shadow-sm: 0 2px 8px rgba(58, 50, 37, 0.06);
+  --lr-shadow-md: 0 6px 20px rgba(58, 50, 37, 0.08);
+  --lr-shadow-lg: 0 14px 38px rgba(58, 50, 37, 0.10);
+
+  /* Typography */
+  --lr-font-sans: "Plus Jakarta Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --lr-font-display: "Plus Jakarta Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --lr-font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+/* ---------- Tailwind theme inline mapping ---------- */
+@theme inline {
+  --color-background: var(--lr-background);
+  --color-foreground: var(--lr-foreground);
+  --color-card: var(--lr-card);
+  --color-card-foreground: var(--lr-card-foreground);
+  --color-popover: var(--lr-popover);
+  --color-popover-foreground: var(--lr-popover-foreground);
+  --color-primary: var(--lr-primary);
+  --color-primary-foreground: var(--lr-primary-foreground);
+  --color-muted: var(--lr-muted);
+  --color-muted-foreground: var(--lr-muted-foreground);
+  --color-border: var(--lr-border);
+  --color-input: var(--lr-input);
+  --color-ring: var(--lr-ring);
+  --color-accent: var(--lr-accent);
+  --color-warning: var(--lr-warning);
+  --color-danger: var(--lr-danger);
+  --color-success: var(--lr-success);
+  --color-info: var(--lr-info);
+
+  --font-sans: var(--lr-font-sans);
+  --font-display: var(--lr-font-display);
+  --font-mono: var(--lr-font-mono);
+
+  --radius-sm: var(--lr-radius-sm);
+  --radius-md: var(--lr-radius-md);
+  --radius-lg: var(--lr-radius-lg);
+  --radius-xl: var(--lr-radius-xl);
+}
+
+/* ---------- Semantic aliases for fill-html-head.mjs ---------- */
+:root {
+  --background: var(--lr-background);
+  --foreground: var(--lr-foreground);
+  --card: var(--lr-card);
+  --card-foreground: var(--lr-card-foreground);
+  --popover: var(--lr-popover);
+  --popover-foreground: var(--lr-popover-foreground);
+  --primary: var(--lr-primary);
+  --primary-foreground: var(--lr-primary-foreground);
+  --muted: var(--lr-muted);
+  --muted-foreground: var(--lr-muted-foreground);
+  --border: var(--lr-border);
+  --input: var(--lr-input);
+  --ring: var(--lr-ring);
+  --radius-sm: var(--lr-radius-sm);
+  --radius-md: var(--lr-radius-md);
+  --radius-lg: var(--lr-radius-lg);
+  --radius-xl: var(--lr-radius-xl);
+}
+
+/* ---------- Base ---------- */
+html { font-family: var(--lr-font-sans); }
+body {
+  background: var(--lr-background);
+  color: var(--lr-foreground);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--lr-background);
+    --color-foreground: var(--lr-foreground);
+    --color-card: var(--lr-card);
+    --color-card-foreground: var(--lr-card-foreground);
+    --color-popover: var(--lr-popover);
+    --color-popover-foreground: var(--lr-popover-foreground);
+    --color-primary: var(--lr-primary);
+    --color-primary-foreground: var(--lr-primary-foreground);
+    --color-muted: var(--lr-muted);
+    --color-muted-foreground: var(--lr-muted-foreground);
+    --color-accent: var(--lr-accent);
+    --color-border: var(--lr-border);
+    --color-input: var(--lr-input);
+    --color-ring: var(--lr-ring);
+    --radius-sm: var(--lr-radius-sm);
+    --radius-md: var(--lr-radius-md);
+    --radius-lg: var(--lr-radius-lg);
+    --radius-xl: var(--lr-radius-xl);
+  }
+  @layer base {
+    body { background: var(--lr-background); color: var(--lr-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--lr-background); }
+      .text-background { color: var(--lr-background); }
+      .border-background { border-color: var(--lr-background); }
+      .ring-background { --tw-ring-color: var(--lr-background); }
+      .bg-foreground { background-color: var(--lr-foreground); }
+      .text-foreground { color: var(--lr-foreground); }
+      .border-foreground { border-color: var(--lr-foreground); }
+      .ring-foreground { --tw-ring-color: var(--lr-foreground); }
+      .bg-card { background-color: var(--lr-card); }
+      .text-card { color: var(--lr-card); }
+      .border-card { border-color: var(--lr-card); }
+      .ring-card { --tw-ring-color: var(--lr-card); }
+      .bg-card-foreground { background-color: var(--lr-card-foreground); }
+      .text-card-foreground { color: var(--lr-card-foreground); }
+      .border-card-foreground { border-color: var(--lr-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--lr-card-foreground); }
+      .bg-popover { background-color: var(--lr-popover); }
+      .text-popover { color: var(--lr-popover); }
+      .border-popover { border-color: var(--lr-popover); }
+      .ring-popover { --tw-ring-color: var(--lr-popover); }
+      .bg-popover-foreground { background-color: var(--lr-popover-foreground); }
+      .text-popover-foreground { color: var(--lr-popover-foreground); }
+      .border-popover-foreground { border-color: var(--lr-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--lr-popover-foreground); }
+      .bg-primary { background-color: var(--lr-primary); }
+      .text-primary { color: var(--lr-primary); }
+      .border-primary { border-color: var(--lr-primary); }
+      .ring-primary { --tw-ring-color: var(--lr-primary); }
+      .bg-primary-foreground { background-color: var(--lr-primary-foreground); }
+      .text-primary-foreground { color: var(--lr-primary-foreground); }
+      .border-primary-foreground { border-color: var(--lr-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--lr-primary-foreground); }
+      .bg-muted { background-color: var(--lr-muted); }
+      .text-muted { color: var(--lr-muted); }
+      .border-muted { border-color: var(--lr-muted); }
+      .ring-muted { --tw-ring-color: var(--lr-muted); }
+      .bg-muted-foreground { background-color: var(--lr-muted-foreground); }
+      .text-muted-foreground { color: var(--lr-muted-foreground); }
+      .border-muted-foreground { border-color: var(--lr-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--lr-muted-foreground); }
+      .bg-accent { background-color: var(--lr-accent); }
+      .text-accent { color: var(--lr-accent); }
+      .border-accent { border-color: var(--lr-accent); }
+      .ring-accent { --tw-ring-color: var(--lr-accent); }
+      .bg-border { background-color: var(--lr-border); }
+      .text-border { color: var(--lr-border); }
+      .border-border { border-color: var(--lr-border); }
+      .ring-border { --tw-ring-color: var(--lr-border); }
+      .bg-input { background-color: var(--lr-input); }
+      .text-input { color: var(--lr-input); }
+      .border-input { border-color: var(--lr-input); }
+      .ring-input { --tw-ring-color: var(--lr-input); }
+      .bg-ring { background-color: var(--lr-ring); }
+      .text-ring { color: var(--lr-ring); }
+      .border-ring { border-color: var(--lr-ring); }
+      .ring-ring { --tw-ring-color: var(--lr-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main class="min-h-screen">
+      <!-- ====================== TOP NAV ====================== -->
+      <header class="sticky top-0 z-40 bg-[var(--lr-card)]/95 backdrop-blur border-b border-[var(--lr-border)]" style="box-shadow: var(--lr-shadow-sm);">
+        <div class="max-w-[1280px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-4 lg:gap-6">
+          <!-- Left: back + brand -->
+          <div class="flex items-center gap-3 lg:gap-4 min-w-0">
+            <button data-dom-id="topnav-back-list" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[14px] font-medium text-[var(--lr-muted-foreground)] hover:text-[var(--lr-primary)] hover:bg-[var(--lr-primary-soft)] transition-colors">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              <span class="whitespace-nowrap hidden sm:inline">返回列表</span>
+            </button>
+            <div class="h-6 w-px bg-[var(--lr-border)]"></div>
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-full bg-[var(--lr-primary-soft)] flex items-center justify-center shrink-0">
+                <i data-lucide="graduation-cap" class="w-5 h-5 text-[var(--lr-primary)]"></i>
+              </div>
+              <span class="text-[15px] font-bold text-[var(--lr-foreground)] whitespace-nowrap truncate">AI Lesson Recorder</span>
+            </div>
+          </div>
+
+          <!-- Center: student context strip -->
+          <div class="hidden md:flex items-center gap-2.5 px-4 py-1.5 rounded-[14px] bg-[var(--lr-muted)] min-w-0">
+            <div class="w-9 h-9 rounded-full bg-[var(--lr-primary-soft)] flex items-center justify-center text-[13px] font-semibold text-[var(--lr-primary)] shrink-0">AC</div>
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="text-[14px] font-semibold text-[var(--lr-foreground)] whitespace-nowrap">Alex Chen</span>
+              <span class="text-[13px] text-[var(--lr-muted-foreground)] truncate">· 餐厅点餐 · 2026-07-18 · 30分钟</span>
+            </div>
+          </div>
+
+          <!-- Right: actions -->
+          <div class="flex items-center gap-2 shrink-0">
+            <button class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[14px] text-[14px] font-medium text-[var(--lr-foreground)] border border-[var(--lr-border)] bg-[var(--lr-card)] hover:bg-[var(--lr-muted)] transition-colors">
+              <i data-lucide="save" class="w-4 h-4"></i>
+              <span class="whitespace-nowrap">保存草稿</span>
+            </button>
+            <div class="flex flex-col items-center">
+              <button disabled class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[14px] text-[14px] font-semibold text-[var(--lr-muted-foreground)] bg-[var(--lr-muted)] cursor-not-allowed border border-[var(--lr-border)]">
+                <i data-lucide="file-check" class="w-4 h-4"></i>
+                <span class="whitespace-nowrap hidden md:inline">生成最终报告</span>
+                <span class="whitespace-nowrap md:hidden">生成</span>
+              </button>
+              <span class="text-[11px] text-[var(--lr-muted-foreground)] mt-0.5 whitespace-nowrap">需先完成审核</span>
+            </div>
+            <button class="w-9 h-9 rounded-full border border-[var(--lr-border)] bg-[var(--lr-card)] flex items-center justify-center hover:bg-[var(--lr-muted)] transition-colors shrink-0" title="切换语言">
+              <i data-lucide="languages" class="w-4 h-4 text-[var(--lr-muted-foreground)]"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- ====================== STEP BAR ====================== -->
+      <section class="max-w-[1280px] mx-auto px-6 lg:px-10 pt-6">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Step 1: 复盘总览 (clickable) -->
+          <div data-dom-id="step-goto-overview" class="flex items-center gap-2.5 cursor-pointer group shrink-0">
+            <div class="w-8 h-8 rounded-full bg-[var(--lr-primary-soft)] flex items-center justify-center text-[13px] font-semibold text-[var(--lr-primary)] group-hover:bg-[var(--lr-primary)] group-hover:text-white transition-colors">1</div>
+            <span class="text-[13px] font-medium text-[var(--lr-primary)] group-hover:underline whitespace-nowrap hidden sm:inline">复盘总览</span>
+          </div>
+          <div class="h-[2px] flex-1 bg-[var(--lr-border)] rounded-full min-w-[12px]"></div>
+
+          <!-- Step 2: 报告草稿 (future) -->
+          <div class="flex items-center gap-2.5 shrink-0">
+            <div class="w-8 h-8 rounded-full bg-[var(--lr-muted)] flex items-center justify-center text-[13px] font-semibold text-[var(--lr-muted-foreground)]">2</div>
+            <span class="text-[13px] font-medium text-[var(--lr-muted-foreground)] whitespace-nowrap hidden sm:inline">报告草稿</span>
+          </div>
+          <div class="h-[2px] flex-1 bg-[var(--lr-border)] rounded-full min-w-[12px]"></div>
+
+          <!-- Step 3: 待确认项 (ACTIVE) -->
+          <div class="flex items-center gap-2.5 shrink-0">
+            <div class="relative">
+              <div class="w-8 h-8 rounded-full bg-[var(--lr-primary)] flex items-center justify-center">
+                <i data-lucide="check" class="w-4 h-4 text-white"></i>
+              </div>
+              <span class="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-[var(--lr-warning)] text-white text-[11px] font-bold flex items-center justify-center border-2 border-[var(--lr-card)]">7</span>
+            </div>
+            <span class="text-[13px] font-bold text-[var(--lr-primary)] whitespace-nowrap">待确认项</span>
+          </div>
+          <div class="h-[2px] flex-1 bg-[var(--lr-border)] rounded-full min-w-[12px]"></div>
+
+          <!-- Step 4: 报告交付 (future) -->
+          <div class="flex items-center gap-2.5 shrink-0">
+            <div class="w-8 h-8 rounded-full bg-[var(--lr-muted)] flex items-center justify-center text-[13px] font-semibold text-[var(--lr-muted-foreground)]">4</div>
+            <span class="text-[13px] font-medium text-[var(--lr-muted-foreground)] whitespace-nowrap hidden sm:inline">报告交付</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================== SUMMARY BAND ====================== -->
+      <section class="max-w-[1280px] mx-auto px-6 lg:px-10 pt-7">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <!-- 待确认 -->
+          <div class="bg-[var(--lr-card)] rounded-[14px] p-4 border border-[var(--lr-border)] flex items-center gap-3" style="box-shadow: var(--lr-shadow-sm);">
+            <div class="w-9 h-9 rounded-full bg-[var(--lr-warning-soft)] flex items-center justify-center shrink-0">
+              <i data-lucide="circle-alert" class="w-[18px] h-[18px] text-[var(--lr-warning)]"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[20px] font-bold text-[var(--lr-warning)] leading-tight whitespace-nowrap">7</div>
+              <div class="text-[12px] text-[var(--lr-muted-foreground)] truncate">待确认</div>
+            </div>
+          </div>
+          <!-- 审核进度 -->
+          <div class="bg-[var(--lr-card)] rounded-[14px] p-4 border border-[var(--lr-border)] flex items-center gap-3" style="box-shadow: var(--lr-shadow-sm);">
+            <div class="w-9 h-9 rounded-full bg-[var(--lr-muted)] flex items-center justify-center shrink-0">
+              <i data-lucide="circle-dot" class="w-[18px] h-[18px] text-[var(--lr-muted-foreground)]"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[20px] font-bold text-[var(--lr-muted-foreground)] leading-tight whitespace-nowrap">0%</div>
+              <div class="text-[12px] text-[var(--lr-muted-foreground)] truncate">审核进度</div>
+            </div>
+          </div>
+          <!-- 课后作业 -->
+          <div class="bg-[var(--lr-card)] rounded-[14px] p-4 border border-[var(--lr-border)] flex items-center gap-3" style="box-shadow: var(--lr-shadow-sm);">
+            <div class="w-9 h-9 rounded-full bg-[var(--lr-accent-soft)] flex items-center justify-center shrink-0">
+              <i data-lucide="clipboard-list" class="w-[18px] h-[18px] text-[var(--lr-accent)]"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[20px] font-bold text-[var(--lr-accent)] leading-tight whitespace-nowrap">3</div>
+              <div class="text-[12px] text-[var(--lr-muted-foreground)] truncate">课后作业</div>
+            </div>
+          </div>
+          <!-- 发音反馈 -->
+          <div class="bg-[var(--lr-card)] rounded-[14px] p-4 border border-[var(--lr-border)] flex items-center gap-3" style="box-shadow: var(--lr-shadow-sm);">
+            <div class="w-9 h-9 rounded-full bg-[var(--lr-info-soft)] flex items-center justify-center shrink-0">
+              <i data-lucide="audio-lines" class="w-[18px] h-[18px] text-[var(--lr-info)]"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[20px] font-bold text-[var(--lr-info)] leading-tight whitespace-nowrap">4</div>
+              <div class="text-[12px] text-[var(--lr-muted-foreground)] truncate">发音反馈</div>
+            </div>
+          </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="mt-4 flex items-center gap-3">
+          <div class="flex-1 h-1.5 rounded-full bg-[var(--lr-muted)] overflow-hidden">
+            <div class="h-full rounded-full bg-[var(--lr-primary)]" style="width: 0%;"></div>
+          </div>
+          <span class="text-[12px] text-[var(--lr-muted-foreground)] whitespace-nowrap">0 / 7 已确认</span>
+        </div>
+      </section>
+
+      <!-- ====================== PAGE HEADER ====================== -->
+      <section class="max-w-[1280px] mx-auto px-6 lg:px-10 pt-7">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5">
+          <div class="min-w-0">
+            <div class="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--lr-accent)] mb-2">老师审核</div>
+            <h1 class="text-[26px] font-bold text-[var(--lr-foreground)] leading-tight" style="text-wrap: balance; word-break: keep-all; overflow-wrap: break-word;">只处理需要你判断的内容</h1>
+            <p class="mt-2 text-[15px] text-[var(--lr-muted-foreground)] leading-relaxed max-w-[640px]">确认 AI 不确定的发音、作业和课堂结论，完成后即可生成最终报告。</p>
+          </div>
+          <!-- Review queue card -->
+          <div class="bg-[var(--lr-card)] rounded-[14px] p-4 border border-[var(--lr-border)] md:w-[280px] shrink-0" style="box-shadow: var(--lr-shadow-sm);">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[13px] text-[var(--lr-muted-foreground)]">审核进度</span>
+              <span class="text-[20px] font-bold text-[var(--lr-foreground)] whitespace-nowrap">0 / 7</span>
+            </div>
+            <div class="h-1.5 rounded-full bg-[var(--lr-muted)] overflow-hidden">
+              <div class="h-full rounded-full bg-[var(--lr-warning)]" style="width: 0%;"></div>
+            </div>
+            <div class="mt-2 text-[12px] text-[var(--lr-muted-foreground)]">全部确认后可生成报告</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================== SUB TABS ====================== -->
+      <section class="max-w-[1280px] mx-auto px-6 lg:px-10 pt-6">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div class="flex items-center gap-2 flex-wrap">
+            <!-- Active tab -->
+            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-[var(--lr-primary-soft)] text-[var(--lr-primary)] font-semibold text-[14px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-[var(--lr-primary)]"></span>
+              <span class="whitespace-nowrap">AI 待确认</span>
+              <span class="min-w-[20px] h-5 px-1.5 rounded-full bg-[var(--lr-primary)] text-white text-[11px] font-bold flex items-center justify-center">4</span>
+            </button>
+            <!-- Tab 2 -->
+            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-[var(--lr-card)] text-[var(--lr-muted-foreground)] font-medium text-[14px] border border-[var(--lr-border)] hover:bg-[var(--lr-muted)] transition-colors">
+              <span class="whitespace-nowrap">课后作业</span>
+              <span class="min-w-[20px] h-5 px-1.5 rounded-full bg-[var(--lr-muted)] text-[var(--lr-muted-foreground)] text-[11px] font-bold flex items-center justify-center">3</span>
+            </button>
+            <!-- Tab 3 -->
+            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-[var(--lr-card)] text-[var(--lr-muted-foreground)] font-medium text-[14px] border border-[var(--lr-border)] hover:bg-[var(--lr-muted)] transition-colors">
+              <span class="whitespace-nowrap">发音反馈</span>
+              <span class="min-w-[20px] h-5 px-1.5 rounded-full bg-[var(--lr-muted)] text-[var(--lr-muted-foreground)] text-[11px] font-bold flex items-center justify-center">4</span>
+            </button>
+          </div>
+          <div class="inline-flex items-center gap-1.5 text-[12px] text-[var(--lr-muted-foreground)]">
+            <i data-lucide="info" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="whitespace-nowrap">仅显示需要老师判断的内容</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================== REVIEW CARDS ====================== -->
+      <section class="max-w-[1280px] mx-auto px-6 lg:px-10 pt-5 pb-32 flex flex-col gap-4">
+
+        <!-- ====== Card 1 — MEDIUM amber, CHECKED ====== -->
+        <article class="bg-[var(--lr-card)] rounded-[20px] p-6 border border-[var(--lr-border)] border-l-4 border-l-[var(--lr-warning)]" style="box-shadow: var(--lr-shadow-sm);">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-3 min-w-0">
+              <div class="w-[22px] h-[22px] rounded-[6px] bg-[var(--lr-primary)] flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="check" class="w-4 h-4 text-white" style="stroke-width: 3;"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-[16px] font-semibold text-[var(--lr-foreground)]">确认发音反馈</h3>
+                <p class="mt-1.5 text-[14px] text-[var(--lr-foreground)] leading-relaxed">“果汁”和“面条”的发音反馈来自模型词级评分，具体声母、韵母或声调问题需老师确认。</p>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[10px] bg-[var(--lr-warning-soft)] text-[var(--lr-foreground)] text-[12px] font-semibold whitespace-nowrap shrink-0">
+              <span class="w-1.5 h-1.5 rounded-full bg-[var(--lr-warning)]"></span>
+              中风险
+            </span>
+          </div>
+          <!-- Evidence chips -->
+          <div class="mt-4 flex flex-wrap items-center gap-2 pl-[34px]">
+            <button class="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-[var(--lr-primary-soft)] hover:bg-[var(--lr-primary)] transition-colors group">
+              <span class="w-5 h-5 rounded-full bg-[var(--lr-primary)] flex items-center justify-center shrink-0">
+                <i data-lucide="play" class="w-2.5 h-2.5 text-white" style="fill: white;"></i>
+              </span>
+              <span class="text-[12px] text-[var(--lr-foreground)] group-hover:text-white whitespace-nowrap" style="font-family: var(--lr-font-mono);">00:35</span>
+              <span class="text-[11px] text-[var(--lr-muted-foreground)] group-hover:text-white/80 whitespace-nowrap">· 课堂证据</span>
+              <i data-lucide="audio-waveform" class="w-3.5 h-3.5 text-[var(--lr-primary)] group-hover:text-white shrink-0"></i>
+            </button>
+            <button class="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-[var(--lr-primary-soft)] hover:bg-[var(--lr-primary)] transition-colors group">
+              <span class="w-5 h-5 rounded-full bg-[var(--lr-primary)] flex items-center justify-center shrink-0">
+                <i data-lucide="play" class="w-2.5 h-2.5 text-white" style="fill: white;"></i>
+              </span>
+              <span class="text-[12px] text-[var(--lr-foreground)] group-hover:text-white whitespace-nowrap" style="font-family: var(--lr-font-mono);">01:59</span>
+              <span class="text-[11px] text-[var(--lr-muted-foreground)] group-hover:text-white/80 whitespace-nowrap">· 课堂证据</span>
+              <i data-lucide="audio-waveform" class="w-3.5 h-3.5 text-[var(--lr-primary)] group-hover:text-white shrink-0"></i>
+            </button>
+          </div>
+          <!-- Teacher note -->
+          <div class="mt-4 pl-[34px]">
+            <textarea class="w-full min-h-[64px] rounded-[14px] bg-[var(--lr-muted)] p-3 text-[14px] text-[var(--lr-foreground)] placeholder:italic placeholder:text-[var(--lr-muted-foreground)] resize-none border border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--lr-ring)]" placeholder="在此输入你的修改意见或备注…"></textarea>
+          </div>
+          <!-- Bottom action -->
+          <div class="mt-4 pl-[34px] flex justify-end">
+            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[14px] text-[13px] font-medium text-[var(--lr-muted-foreground)] hover:text-[var(--lr-danger)] hover:bg-[var(--lr-danger-soft)] transition-colors">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              <span class="whitespace-nowrap">忽略此项</span>
+            </button>
+          </div>
+        </article>
+
+        <!-- ====== Card 2 — LOW info, CHECKED ====== -->
+        <article class="bg-[var(--lr-card)] rounded-[20px] p-6 border border-[var(--lr-border)] border-l-4 border-l-[var(--lr-info)]" style="box-shadow: var(--lr-shadow-sm);">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-3 min-w-0">
+              <div class="w-[22px] h-[22px] rounded-[6px] bg-[var(--lr-primary)] flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="check" class="w-4 h-4 text-white" style="stroke-width: 3;"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-[16px] font-semibold text-[var(--lr-foreground)]">确认课后作业</h3>
+                <p class="mt-1.5 text-[14px] text-[var(--lr-foreground)] leading-relaxed">“场景对话练习”是系统生成的候选作业，基于课堂目标推导，不是老师明确口头布置，建议老师确认或删除。</p>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[10px] bg-[var(--lr-info-soft)] text-[var(--lr-foreground)] text-[12px] font-semibold whitespace-nowrap shrink-0">
+              <span class="w-1.5 h-1.5 rounded-full bg-[var(--lr-info)]"></span>
+              低风险
+            </span>
+          </div>
+          <!-- Evidence chips -->
+          <div class="mt-4 flex flex-wrap items-center gap-2 pl-[34px]">
+            <button class="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-[var(--lr-primary-soft)] hover:bg-[var(--lr-primary)] transition-colors group">
+              <span class="w-5 h-5 rounded-full bg-[var(--lr-primary)] flex items-center justify-center shrink-0">
+                <i data-lucide="play" class="w-2.5 h-2.5 text-white" style="fill: white;"></i>
+              </span>
+              <span class="text-[12px] text-[var(--lr-foreground)] group-hover:text-white whitespace-nowrap" style="font-family: var(--lr-font-mono);">02:37</span>
+              <span class="text-[11px] text-[var(--lr-muted-foreground)] group-hover:text-white/80 whitespace-nowrap">· 课堂证据</span>
+              <i data-lucide="audio-waveform" class="w-3.5 h-3.5 text-[var(--lr-primary)] group-hover:text-white shrink-0"></i>
+            </button>
+          </div>
+          <!-- Teacher note -->
+          <div class="mt-4 pl-[34px]">
+            <textarea class="w-full min-h-[64px] rounded-[14px] bg-[var(--lr-muted)] p-3 text-[14px] text-[var(--lr-foreground)] placeholder:italic placeholder:text-[var(--lr-muted-foreground)] resize-none border border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--lr-ring)]" placeholder="在此输入你的修改意见或备注…"></textarea>
+          </div>
+          <!-- Bottom action -->
+          <div class="mt-4 pl-[34px] flex justify-end">
+            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[14px] text-[13px] font-medium text-[var(--lr-muted-foreground)] hover:text-[var(--lr-danger)] hover:bg-[var(--lr-danger-soft)] transition-colors">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              <span class="whitespace-nowrap">忽略此项</span>
+            </button>
+          </div>
+        </article>
+
+        <!-- ====== Card 3 — MEDIUM amber, CHECKED, no evidence ====== -->
+        <article class="bg-[var(--lr-card)] rounded-[20px] p-6 border border-[var(--lr-border)] border-l-4 border-l-[var(--lr-warning)]" style="box-shadow: var(--lr-shadow-sm);">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-3 min-w-0">
+              <div class="w-[22px] h-[22px] rounded-[6px] bg-[var(--lr-primary)] flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="check" class="w-4 h-4 text-white" style="stroke-width: 3;"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-[16px] font-semibold text-[var(--lr-foreground)]">核对 AI 建议</h3>
+                <p class="mt-1.5 text-[14px] text-[var(--lr-foreground)] leading-relaxed">学生表现评价为 AI 初评，最终应以老师确认为准。</p>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[10px] bg-[var(--lr-warning-soft)] text-[var(--lr-foreground)] text-[12px] font-semibold whitespace-nowrap shrink-0">
+              <span class="w-1.5 h-1.5 rounded-full bg-[var(--lr-warning)]"></span>
+              中风险
+            </span>
+          </div>
+          <!-- No evidence -->
+          <div class="mt-4 flex items-center gap-2 pl-[34px]">
+            <span class="inline-flex items-center gap-1.5 text-[12px] text-[var(--lr-muted-foreground)] italic">
+              <i data-lucide="minus-circle" class="w-3.5 h-3.5"></i>
+              无课堂证据
+            </span>
+          </div>
+          <!-- Teacher note -->
+          <div class="mt-4 pl-[34px]">
+            <textarea class="w-full min-h-[64px] rounded-[14px] bg-[var(--lr-muted)] p-3 text-[14px] text-[var(--lr-foreground)] placeholder:italic placeholder:text-[var(--lr-muted-foreground)] resize-none border border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--lr-ring)]" placeholder="在此输入你的修改意见或备注…"></textarea>
+          </div>
+          <!-- Bottom action -->
+          <div class="mt-4 pl-[34px] flex justify-end">
+            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[14px] text-[13px] font-medium text-[var(--lr-muted-foreground)] hover:text-[var(--lr-danger)] hover:bg-[var(--lr-danger-soft)] transition-colors">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              <span class="whitespace-nowrap">忽略此项</span>
+            </button>
+          </div>
+        </article>
+
+        <!-- ====== Card 4 — HIGH danger, UNCHECKED, emphasized ====== -->
+        <article class="relative bg-[var(--lr-card)] rounded-[20px] p-6 border border-[var(--lr-border)] border-l-4 border-l-[var(--lr-danger)] overflow-hidden" style="box-shadow: var(--lr-shadow-md);">
+          <!-- faint danger-soft top accent -->
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--lr-danger-soft)] via-[var(--lr-danger)]/30 to-transparent"></div>
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-3 min-w-0">
+              <!-- Unchecked checkbox -->
+              <div class="w-[22px] h-[22px] rounded-[6px] bg-[var(--lr-card)] border-2 border-[var(--lr-border)] flex items-center justify-center shrink-0 mt-0.5"></div>
+              <div class="min-w-0">
+                <h3 class="text-[16px] font-semibold text-[var(--lr-foreground)]">确认发音反馈</h3>
+                <p class="mt-1.5 text-[14px] text-[var(--lr-foreground)] leading-relaxed">pa_002 的学生实际表达是“一个果汁”，与参考文本“一杯果汁”不一致。该片段只能支持量词纠错，不能作为确定发音问题发送。</p>
+              </div>
+            </div>
+            <div class="flex flex-col items-end gap-1.5 shrink-0">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-[10px] bg-[var(--lr-danger)] text-white text-[11px] font-bold whitespace-nowrap">
+                <i data-lucide="flag" class="w-3 h-3"></i>
+                需处理
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[10px] bg-[var(--lr-danger-soft)] text-[var(--lr-foreground)] text-[12px] font-semibold whitespace-nowrap">
+                <span class="w-1.5 h-1.5 rounded-full bg-[var(--lr-danger)]"></span>
+                高风险
+              </span>
+            </div>
+          </div>
+          <!-- Evidence chips -->
+          <div class="mt-4 flex flex-wrap items-center gap-2 pl-[34px]">
+            <button class="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-[var(--lr-primary-soft)] hover:bg-[var(--lr-primary)] transition-colors group">
+              <span class="w-5 h-5 rounded-full bg-[var(--lr-primary)] flex items-center justify-center shrink-0">
+                <i data-lucide="play" class="w-2.5 h-2.5 text-white" style="fill: white;"></i>
+              </span>
+              <span class="text-[12px] text-[var(--lr-foreground)] group-hover:text-white whitespace-nowrap" style="font-family: var(--lr-font-mono);">00:52</span>
+              <span class="text-[11px] text-[var(--lr-muted-foreground)] group-hover:text-white/80 whitespace-nowrap">· 课堂证据</span>
+              <i data-lucide="audio-waveform" class="w-3.5 h-3.5 text-[var(--lr-primary)] group-hover:text-white shrink-0"></i>
+            </button>
+          </div>
+          <!-- Teacher note with amber focus hint -->
+          <div class="mt-4 pl-[34px]">
+            <textarea class="w-full min-h-[64px] rounded-[14px] bg-[var(--lr-muted)] p-3 text-[14px] text-[var(--lr-foreground)] placeholder:italic placeholder:text-[var(--lr-muted-foreground)] resize-none border border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--lr-warning)] focus:border-[var(--lr-warning)]" placeholder="在此输入你的修改意见或备注…"></textarea>
+          </div>
+          <!-- Bottom action -->
+          <div class="mt-4 pl-[34px] flex justify-end">
+            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[14px] text-[13px] font-medium text-[var(--lr-muted-foreground)] hover:text-[var(--lr-danger)] hover:bg-[var(--lr-danger-soft)] transition-colors">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              <span class="whitespace-nowrap">忽略此项</span>
+            </button>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- ====================== STICKY FOOTER ====================== -->
+      <footer class="sticky bottom-0 z-40 bg-[var(--lr-card)]/95 backdrop-blur border-t border-[var(--lr-border)]" style="box-shadow: var(--lr-shadow-md);">
+        <div class="max-w-[1280px] mx-auto px-6 lg:px-10 py-4 flex items-center justify-between gap-4">
+          <!-- Left: summary -->
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="text-[13px] text-[var(--lr-muted-foreground)] whitespace-nowrap">已确认 3 / 7</span>
+            <div class="w-28 sm:w-32 h-1.5 rounded-full bg-[var(--lr-muted)] overflow-hidden">
+              <div class="h-full rounded-full bg-[var(--lr-primary)]" style="width: 43%;"></div>
+            </div>
+          </div>
+          <!-- Right: actions -->
+          <div class="flex items-center gap-3 shrink-0">
+            <button class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-[14px] text-[14px] font-medium text-[var(--lr-foreground)] border border-[var(--lr-border)] bg-[var(--lr-card)] hover:bg-[var(--lr-muted)] transition-colors">
+              <i data-lucide="save" class="w-4 h-4"></i>
+              <span class="whitespace-nowrap">保存草稿</span>
+            </button>
+            <div class="flex flex-col items-end">
+              <button class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-[14px] text-[14px] font-semibold text-white bg-[var(--lr-primary)] hover:bg-[var(--lr-primary-press)] transition-colors">
+                <span class="whitespace-nowrap">全部确认并生成报告</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+              <span class="text-[11px] text-[var(--lr-muted-foreground)] mt-0.5 whitespace-nowrap">还需 4 项</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI课堂语音记录助手 · 整体架构流程图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --bg:#F1F5F9;--surface:#FFFFFF;--surface-2:#F8FAFC;--surface-muted:#F1F5F9;
+  --text:#0F172A;--text-muted:#475569;--text-soft:#94A3B8;
+  --border:#E2E8F0;--border-strong:#CBD5E1;
+  --brand:#7C3AED;--brand-strong:#5B21B6;--brand-soft:#F5F3FF;--brand-border:#DDD6FE;
+  --blue:#3B82F6;--blue-soft:#EFF6FF;--blue-border:#BFDBFE;
+  --green:#059669;--green-soft:#ECFDF5;--green-border:#A7F3D0;
+  --amber:#D97706;--amber-soft:#FFFBEB;--amber-border:#FDE68A;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06),0 2px 4px rgba(0,0,0,.04);
+  --radius:10px;--radius-lg:16px;
+  --font-sans:system-ui,-apple-system,'Segoe UI',Roboto,'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0A0F1E;--surface:#111827;--surface-2:#1E293B;--surface-muted:#1E293B;
+    --text:#E2E8F0;--text-muted:#94A3B8;--text-soft:#64748B;
+    --border:#334155;--border-strong:#475569;
+    --brand:#A78BFA;--brand-strong:#C4B5FD;--brand-soft:#1E1535;--brand-border:#5B21B6;
+    --blue:#60A5FA;--blue-soft:#0C1E3A;--blue-border:#1E40AF;
+    --green:#34D399;--green-soft:#052E1B;--green-border:#065F46;
+    --amber:#FBBF24;--amber-soft:#2A1A05;--amber-border:#92400E;
+    --shadow:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 12px rgba(0,0,0,.3);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;scroll-padding-top:72px;}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;}
+
+/* === HERO === */
+.hero{background:linear-gradient(135deg,#7C3AED 0%,#5B21B6 40%,#3B82F6 100%);padding:36px 24px 28px;color:#fff;position:relative;overflow:hidden;}
+@media(prefers-color-scheme:dark){.hero{background:linear-gradient(135deg,#5B21B6 0%,#312E81 40%,#1E40AF 100%);}}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.06);}
+.hero::before{content:"";position:absolute;left:-80px;bottom:-80px;width:250px;height:250px;border-radius:50%;background:rgba(255,255,255,.04);}
+.hero-inner{max-width:1120px;margin:0 auto;position:relative;z-index:1;}
+.hero h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px;}
+.hero .subtitle{font-size:14px;opacity:.85;max-width:680px;}
+.hero .meta{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;font-size:12.5px;}
+.hero .meta span{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);padding:3px 12px;border-radius:999px;backdrop-filter:blur(4px);}
+.hero .meta span::before{content:"";width:5px;height:5px;border-radius:50%;background:#FBBF24;}
+
+/* === STICKY NAV === */
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+@media(prefers-color-scheme:dark){.nav{background:rgba(17,24,39,.85);}}
+.nav-inner{max-width:1120px;margin:0 auto;display:flex;gap:2px;padding:0 16px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-inner a{display:flex;align-items:center;gap:6px;padding:12px 14px;font-size:13px;font-weight:500;color:var(--text-muted);text-decoration:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.nav-inner a:hover{color:var(--brand);}
+.nav-inner a.active{color:var(--brand);border-bottom-color:var(--brand);}
+.nav-inner a .num{font-size:11px;font-weight:700;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;border-radius:5px;background:var(--surface-muted);color:var(--text-soft);}
+.nav-inner a.active .num{background:var(--brand);color:#fff;}
+
+/* === MAIN === */
+.main{max-width:1120px;margin:0 auto;padding:28px 16px 60px;}
+
+/* === SECTION === */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;scroll-margin-top:72px;}
+.section-header{display:flex;align-items:center;gap:14px;padding:20px 24px;border-bottom:1px solid var(--border);}
+.section-num{flex-shrink:0;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;}
+.section-num.purple{background:linear-gradient(135deg,#7C3AED,#5B21B6);}
+.section-num.blue{background:linear-gradient(135deg,#3B82F6,#1E40AF);}
+.section-num.green{background:linear-gradient(135deg,#059669,#047857);}
+.section-num.amber{background:linear-gradient(135deg,#D97706,#B45309);}
+.section-title{font-size:17px;font-weight:700;letter-spacing:-.01em;}
+.section-desc{font-size:12.5px;color:var(--text-muted);margin-top:2px;}
+.section-body{padding:24px;}
+
+/* === MERMAID === */
+.mermaid-wrap{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;overflow-x:auto;}
+.mermaid{display:flex;justify-content:center;}
+.mermaid svg{max-width:100%;height:auto;}
+
+/* === LEGEND === */
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;padding:12px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);}
+.legend-item{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--text-muted);font-weight:500;}
+.legend-dot{width:16px;height:16px;border-radius:4px;flex-shrink:0;}
+.legend-dot.regular{background:var(--surface-muted);border:1px solid var(--border-strong);}
+.legend-dot.focal{background:var(--brand-soft);border:1.5px solid var(--brand);}
+.legend-dot.feedback{background:transparent;border:1.5px dashed var(--brand);}
+.legend-dot.langgraph{background:transparent;border:1.5px dashed var(--blue);}
+
+/* === DIAGRAM CONTAINER === */
+.diagram-container{display:flex;justify-content:center;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;overflow-x:auto;}
+.diagram-container svg{max-width:100%;height:auto;}
+
+/* === PRINCIPLES === */
+.principles{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;}
+.principle{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;transition:box-shadow .2s,border-color .2s;position:relative;overflow:hidden;}
+.principle:hover{box-shadow:var(--shadow-md);border-color:var(--brand-border);}
+.principle::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brand);}
+.principle .num{font-size:11px;font-weight:800;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.principle .txt{font-size:14px;color:var(--text);font-weight:500;line-height:1.5;}
+
+/* === COST === */
+.cost-assumption{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px;margin-bottom:20px;}
+.cost-assumption .item{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+.cost-assumption .item .label{font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+.cost-assumption .item .value{font-size:13px;color:var(--text);line-height:1.5;}
+
+.cost-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px;margin-bottom:20px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.cost-table th{background:var(--surface-muted);font-weight:700;color:var(--text-muted);font-size:12px;text-transform:uppercase;letter-spacing:.03em;padding:11px 16px;text-align:left;border-bottom:1px solid var(--border);}
+.cost-table td{padding:12px 16px;border-bottom:1px solid var(--border);}
+.cost-table tbody tr:last-child td{border-bottom:none;}
+.cost-table tbody tr:hover{background:var(--surface-2);}
+.cost-table td.cost-val{font-weight:700;color:var(--brand-strong);font-variant-numeric:tabular-nums;}
+
+.cost-summary{background:linear-gradient(135deg,var(--brand-soft),var(--blue-soft));border:1px solid var(--brand-border);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:16px;display:flex;flex-direction:column;gap:14px;}
+.cost-summary .big{font-size:38px;font-weight:800;color:var(--brand-strong);line-height:1;letter-spacing:-.02em;}
+.cost-summary .big .unit{font-size:15px;font-weight:600;color:var(--text-muted);margin-left:4px;}
+.cost-summary .note{font-size:13px;color:var(--text-muted);line-height:1.6;}
+.cost-summary .divider{display:none;}
+
+.cost-sensitive{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;list-style:none;padding:0;}
+.cost-sensitive li{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;font-size:13px;color:var(--text-muted);display:flex;align-items:flex-start;gap:8px;}
+.cost-sensitive li::before{content:"▸";color:var(--brand);font-weight:700;flex-shrink:0;}
+
+/* === FOOTER === */
+.footer{text-align:center;padding:32px 16px;font-size:12px;color:var(--text-soft);}
+.footer .line{width:60px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--brand),var(--blue));margin:0 auto 14px;}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .hero{padding:28px 16px 22px;}
+  .hero h1{font-size:21px;}
+  .main{padding:20px 10px 40px;}
+  .section-header{padding:16px 16px;}
+  .section-body{padding:16px;}
+  .section-title{font-size:15px;}
+  .cost-summary{flex-direction:column;align-items:flex-start;gap:14px;}
+  .cost-summary .divider{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1>AI 课堂语音记录助手 · 整体架构</h1>
+    <p class="subtitle">从双音轨采集到三版本报告的端到端七层流水线 · LangGraph 多 Agent 编排 · 人在回路控制</p>
+    <div class="meta">
+      <span>eChineseLearning AI 产品实习面试</span>
+      <span>架构设计文档</span>
+      <span>LangGraph / 多Agent / ASR / 发音评估</span>
+    </div>
+  </div>
+</div>
+
+<!-- STICKY NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#s1" class="active"><span class="num">1</span>架构流程图</a>
+    <a href="#s2"><span class="num">2</span>七层流水线</a>
+    <a href="#s3"><span class="num">3</span>Agent 循环</a>
+    <a href="#s4"><span class="num">4</span>关键原则</a>
+    <a href="#s5"><span class="num">5</span>成本测算</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- S1: 架构流程图 -->
+<div id="s1" class="section">
+  <div class="section-header">
+    <div class="section-num purple">1</div>
+    <div>
+      <div class="section-title">整体架构流程图</div>
+      <div class="section-desc">按七层 subgraph 分组 · 主干实线 / 数据汇聚虚线 / 反馈回环粗虚线 · 决策节点黄色 · 关键节点紫色</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    subgraph S1["① 音频采集层"]
+        A["一对一在线中文课堂"] --> B["双音轨采集<br/>⚠ ASR 计费时长翻倍"]
+        B --> C["teacher_audio.wav<br/>老师端音轨"]
+        B --> D["student_audio.wav<br/>学生端音轨"]
+    end
+
+    subgraph S2["② 语音理解层"]
+        C --> E["老师端 ASR<br/>转写 + 时间戳"]
+        D --> F["学生端 ASR<br/>转写 + 时间戳"]
+        D --> G["学生端 VAD<br/>切分说话片段"]
+        E --> H["课堂上下文分析<br/>讲解 / 提问 / 作业 / 跟读指令"]
+        F --> I["学生内容分析<br/>回答 / 疑问 / 中文关键词"]
+        G --> J["学生说话片段<br/>start_time / end_time"]
+    end
+
+    subgraph S3["③ 片段识别与发音评估层"]
+        H --> K["中文练习片段识别"]
+        I --> K
+        J --> K
+        K --> L{"是否为<br/>中文练习片段?"}
+        L -- "否" --> M["课堂内容总结<br/>不做发音评估"]
+        L -- "是" --> N["截取学生音频片段<br/>加入 300-500ms padding"]
+        N --> O["确定 reference_text<br/>老师跟读句 / 课件目标句 / 老师纠正句"]
+        O --> P["Pronunciation Assessment<br/>中文发音评估"]
+        P --> Q["发音评估结果<br/>accuracy / fluency / completeness<br/>prosody / low_score_words"]
+    end
+
+    subgraph S4["④ 证据与置信度控制层"]
+        R0["Evidence Extractor<br/>证据抽取 + 时间戳绑定"] --> R1["Confidence Scorer<br/>置信度评估"]
+        R1 --> R2["Fallback Handler<br/>失败兜底策略"]
+    end
+
+    subgraph LG["⟡ LangGraph 编排区 · 有状态工作流 / 条件路由 / 循环 / human-in-the-loop"]
+        subgraph S5["⑤ Agent 编排层"]
+            S["LangGraph State · 结构化输入聚合<br/>课堂转写 / 证据片段 / 置信度<br/>发音评估 / 作业候选"]
+            S --> T["Writer Agent<br/>生成课后报告初稿"]
+            T --> U0["Rule Validator<br/>硬规则校验"]
+            U0 --> U["Reviewer Agent<br/>按 rubric 评审报告质量"]
+            U --> V{"报告是否合格?"}
+        end
+
+        subgraph S6["⑥ 人在回路层"]
+            V -- "合格" --> W0["Risk Highlight<br/>低置信内容高亮"]
+            W0 --> W["Human-in-the-loop<br/>老师审核确认"]
+            W --> X{"老师是否确认?"}
+        end
+
+        Y["Final Report Generator<br/>生成最终版本"]
+        AC["Teacher Edit Log<br/>老师修改记录"]
+    end
+
+    subgraph S7["⑦ 输出与数据闭环层"]
+        X -- "确认" --> Y
+        Y --> Z1["老师版报告<br/>课堂复盘 / 下节课建议"]
+        Y --> Z2["学生版报告<br/>知识点 / 易错点 / 作业"]
+        Y --> Z3["家长版报告<br/>学习表现 / 进步点 / 本周建议"]
+        Z1 --> AA["学生学习档案"]
+        Z2 --> AA
+        Z3 --> AA
+        W --> AC
+        AC --> AD["Prompt / Rubric / 词表优化<br/>数据反馈闭环"]
+        AA --> AB["后续迭代<br/>AI陪练 / 个性化学习路径 / 流失风险预警"]
+        AD --> AB
+        %% 隐形链接强制垂直排列，避免水平展开
+        Z1 ~~~ Z2
+        Z2 ~~~ Z3
+        AA ~~~ AC
+    end
+
+    %% 证据抽取的跨层数据来源（细虚线）
+    Q -.-> R0
+    H -.-> R0
+    I -.-> R0
+
+    %% 各层输出汇聚到 LangGraph State（细虚线）
+    M -.-> S
+    Q -.-> S
+    R2 -.-> S
+
+    %% 反馈循环（粗虚线 + 标签）
+    V -.->|"不合格<br/>返回修改意见"| T
+    X -.->|"修改 / 驳回<br/>附带老师意见"| T
+
+    classDef decision fill:#FEF9C3,stroke:#CA8A04,stroke-width:2px,color:#713F12
+    classDef focal fill:#EDE9FE,stroke:#7C3AED,stroke-width:2px,color:#4C1D95
+    class L,V,X decision
+    class S,W,Y focal
+    style LG fill:#EFF6FF,stroke:#3B82F6,stroke-width:2.5px,color:#1E40AF
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2: 七层流水线 -->
+<div id="s2" class="section">
+  <div class="section-header">
+    <div class="section-num blue">2</div>
+    <div>
+      <div class="section-title">七层流水线总览</div>
+      <div class="section-desc">端到端链路压缩成七层 · 紫色节点为人在回路控制点 · 蓝色虚线框为 LangGraph 编排区</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="diagram-container">
+      <svg viewBox="0 0 720 670" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="max-width:700px">
+        <defs>
+          <marker id="aN" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L7 4 L1 7 Z" fill="var(--text-soft)"/></marker>
+          <marker id="aB" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L7 4 L1 7 Z" fill="var(--brand)"/></marker>
+        </defs>
+        <!-- B1 -->
+        <rect fill="var(--surface)" stroke="var(--border)" stroke-width="1" x="36" y="40" width="580" height="68" rx="12"/>
+        <rect fill="var(--brand-soft)" stroke="var(--brand-border)" stroke-width="1" x="48" y="58" width="96" height="32" rx="8"/>
+        <text font="600 12px var(--font-sans)" fill="var(--brand)" x="96" y="79" text-anchor="middle">音频采集</text>
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="188" y="54" width="400" height="40" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="388" y="72" text-anchor="middle">双音轨采集 ⚠ ASR 计费翻倍</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="388" y="88" text-anchor="middle">老师音轨 · 学生音轨</text>
+        <!-- B2 -->
+        <rect fill="var(--surface)" stroke="var(--border)" stroke-width="1" x="36" y="124" width="580" height="68" rx="12"/>
+        <rect fill="var(--brand-soft)" stroke="var(--brand-border)" stroke-width="1" x="48" y="142" width="96" height="32" rx="8"/>
+        <text font="600 12px var(--font-sans)" fill="var(--brand)" x="96" y="163" text-anchor="middle">语音理解</text>
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="188" y="138" width="400" height="40" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="388" y="156" text-anchor="middle">ASR 转写 + VAD 切分</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="388" y="172" text-anchor="middle">老师讲解/提问 · 学生回答/疑问</text>
+        <!-- B3 -->
+        <rect fill="var(--surface)" stroke="var(--border)" stroke-width="1" x="36" y="208" width="580" height="68" rx="12"/>
+        <rect fill="var(--brand-soft)" stroke="var(--brand-border)" stroke-width="1" x="48" y="226" width="96" height="32" rx="8"/>
+        <text font="600 12px var(--font-sans)" fill="var(--brand)" x="96" y="247" text-anchor="middle">片段与发音</text>
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="188" y="222" width="400" height="40" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="388" y="240" text-anchor="middle">片段识别 → 发音评估</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="388" y="256" text-anchor="middle">是 → 评估 · 否 → 课堂总结</text>
+        <!-- B4 -->
+        <rect fill="var(--surface)" stroke="var(--border)" stroke-width="1" x="36" y="292" width="580" height="68" rx="12"/>
+        <rect fill="var(--brand-soft)" stroke="var(--brand-border)" stroke-width="1" x="48" y="310" width="96" height="32" rx="8"/>
+        <text font="600 12px var(--font-sans)" fill="var(--brand)" x="96" y="331" text-anchor="middle">证据与置信度</text>
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="188" y="306" width="400" height="40" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="388" y="324" text-anchor="middle">证据抽取 + 置信度评估 + 失败兜底</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="388" y="340" text-anchor="middle">高 / 中 / 低 置信分级</text>
+        <!-- LangGraph boundary -->
+        <rect fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2" stroke-dasharray="6 4" x="24" y="368" width="624" height="168" rx="14"/>
+        <text font="700 12px var(--font-sans)" fill="var(--blue)" x="38" y="385">⟡ LangGraph 编排区</text>
+        <!-- B5 -->
+        <rect fill="var(--surface)" stroke="var(--border)" stroke-width="1" x="36" y="376" width="580" height="68" rx="12"/>
+        <rect fill="var(--brand-soft)" stroke="var(--brand-border)" stroke-width="1" x="48" y="394" width="96" height="32" rx="8"/>
+        <text font="600 12px var(--font-sans)" fill="var(--brand)" x="96" y="415" text-anchor="middle">Agent 编排</text>
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="188" y="390" width="400" height="40" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="388" y="408" text-anchor="middle">Writer → Rule Validator → Reviewer</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="388" y="424" text-anchor="middle">写作-评审循环 ≤ 2 次</text>
+        <!-- B6 -->
+        <rect fill="var(--surface)" stroke="var(--border)" stroke-width="1" x="36" y="460" width="580" height="68" rx="12"/>
+        <rect fill="var(--brand-soft)" stroke="var(--brand-border)" stroke-width="1" x="48" y="478" width="96" height="32" rx="8"/>
+        <text font="600 12px var(--font-sans)" fill="var(--brand)" x="96" y="499" text-anchor="middle">人在回路</text>
+        <rect fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="1.5" x="188" y="474" width="400" height="40" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--brand-strong)" x="388" y="492" text-anchor="middle">风险高亮 → 老师确认</text>
+        <text font="12px var(--font-sans)" fill="var(--brand-strong)" x="388" y="508" text-anchor="middle">修改 · 驳回 · 确认</text>
+        <!-- B7 -->
+        <rect fill="var(--surface)" stroke="var(--border)" stroke-width="1" x="36" y="544" width="580" height="68" rx="12"/>
+        <rect fill="var(--brand-soft)" stroke="var(--brand-border)" stroke-width="1" x="48" y="562" width="96" height="32" rx="8"/>
+        <text font="600 12px var(--font-sans)" fill="var(--brand)" x="96" y="583" text-anchor="middle">输出与闭环</text>
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="188" y="558" width="400" height="40" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="388" y="576" text-anchor="middle">三版本报告 → 学生学习档案</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="388" y="592" text-anchor="middle">修改记录回流优化</text>
+        <!-- arrows -->
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="388" y1="110" x2="388" y2="122" marker-end="url(#aN)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="388" y1="194" x2="388" y2="206" marker-end="url(#aN)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="388" y1="278" x2="388" y2="290" marker-end="url(#aN)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="388" y1="362" x2="388" y2="374" marker-end="url(#aN)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="388" y1="446" x2="388" y2="458" marker-end="url(#aN)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="388" y1="530" x2="388" y2="542" marker-end="url(#aN)"/>
+        <!-- feedback -->
+        <path stroke="var(--brand)" stroke-width="1.8" fill="none" stroke-dasharray="5 4" d="M616,578 L652,578 L652,410 L620,410" marker-end="url(#aB)"/>
+        <g transform="rotate(-90 652 494)"><rect x="600" y="486" width="104" height="16" rx="8" fill="var(--surface)" stroke="var(--brand)"/><text font="600 11px var(--font-sans)" fill="var(--brand)" x="652" y="498" text-anchor="middle">数据反馈闭环</text></g>
+        <text font="12px var(--font-sans)" fill="var(--text-soft)" x="36" y="648">紫色虚线：老师修改记录回流，优化 prompt / rubric / 课程词表 / 片段识别规则</text>
+      </svg>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot regular"></span>常规节点</span>
+      <span class="legend-item"><span class="legend-dot focal"></span>人在回路（关键控制点）</span>
+      <span class="legend-item"><span class="legend-dot feedback"></span>数据反馈闭环</span>
+      <span class="legend-item"><span class="legend-dot langgraph"></span>LangGraph 编排区</span>
+    </div>
+  </div>
+</div>
+
+<!-- S3: Agent 循环 -->
+<div id="s3" class="section">
+  <div class="section-header">
+    <div class="section-num blue">3</div>
+    <div>
+      <div class="section-title">写作-评审-人审循环</div>
+      <div class="section-desc">放大 LangGraph 编排区内部 · Writer → Rule Validator → Reviewer 双循环 · 蓝色虚线框为 LangGraph 管辖节点</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="diagram-container">
+      <svg viewBox="0 0 720 685" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="max-width:700px">
+        <defs>
+          <marker id="aN2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L7 4 L1 7 Z" fill="var(--text-soft)"/></marker>
+          <marker id="aB2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L7 4 L1 7 Z" fill="var(--brand)"/></marker>
+          <marker id="aL" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L7 4 L1 7 Z" fill="var(--text-muted)"/></marker>
+        </defs>
+        <rect fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2" stroke-dasharray="6 4" x="150" y="34" width="460" height="624" rx="14"/>
+        <text font="700 12px var(--font-sans)" fill="var(--blue)" x="164" y="50">⟡ LangGraph 编排区</text>
+        <!-- N1 Writer -->
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="260" y="56" width="200" height="46" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="360" y="77" text-anchor="middle">Writer Agent</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="360" y="93" text-anchor="middle">生成报告初稿</text>
+        <!-- N2 Rule Validator -->
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="260" y="126" width="200" height="46" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="360" y="147" text-anchor="middle">Rule Validator</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="360" y="163" text-anchor="middle">硬规则校验</text>
+        <!-- N3 Reviewer -->
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="260" y="196" width="200" height="46" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="360" y="217" text-anchor="middle">Reviewer Agent</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="360" y="233" text-anchor="middle">rubric 评审</text>
+        <!-- D1 -->
+        <path fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="1.5" d="M360,257 L440,287 L360,317 L280,287 Z"/>
+        <text font="600 13px var(--font-sans)" fill="var(--text)" x="360" y="291" text-anchor="middle">报告合格?</text>
+        <!-- N4 Risk Highlight -->
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="260" y="337" width="200" height="46" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="360" y="358" text-anchor="middle">Risk Highlight</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="360" y="374" text-anchor="middle">低置信内容高亮</text>
+        <!-- N5 老师确认 -->
+        <rect fill="var(--surface-muted)" stroke="var(--border)" stroke-width="1" x="260" y="407" width="200" height="46" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--text)" x="360" y="428" text-anchor="middle">老师审核确认</text>
+        <text font="12px var(--font-sans)" fill="var(--text-muted)" x="360" y="444" text-anchor="middle">修改 · 驳回 · 确认</text>
+        <!-- D2 -->
+        <path fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="1.5" d="M360,472 L440,502 L360,532 L280,502 Z"/>
+        <text font="600 13px var(--font-sans)" fill="var(--text)" x="360" y="506" text-anchor="middle">老师确认?</text>
+        <!-- N6 Final Report -->
+        <rect fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="1.5" x="260" y="552" width="200" height="46" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--brand-strong)" x="360" y="573" text-anchor="middle">Final Report</text>
+        <text font="12px var(--font-sans)" fill="var(--brand-strong)" x="360" y="589" text-anchor="middle">生成最终版本</text>
+        <!-- N7 三版本报告 -->
+        <rect fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="1.5" x="260" y="618" width="200" height="46" rx="8"/>
+        <text font="600 14px var(--font-sans)" fill="var(--brand-strong)" x="360" y="639" text-anchor="middle">三版本报告</text>
+        <text font="12px var(--font-sans)" fill="var(--brand-strong)" x="360" y="655" text-anchor="middle">老师 · 学生 · 家长</text>
+        <!-- arrows -->
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="360" y1="103" x2="360" y2="125" marker-end="url(#aN2)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="360" y1="173" x2="360" y2="195" marker-end="url(#aN2)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="360" y1="243" x2="360" y2="256" marker-end="url(#aN2)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="360" y1="318" x2="360" y2="336" marker-end="url(#aN2)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="360" y1="384" x2="360" y2="406" marker-end="url(#aN2)"/>
+        <line stroke="var(--text-soft)" stroke-width="1.5" fill="none" x1="360" y1="454" x2="360" y2="471" marker-end="url(#aN2)"/>
+        <line stroke="var(--brand)" stroke-width="1.8" fill="none" x1="360" y1="533" x2="360" y2="551" marker-end="url(#aB2)"/>
+        <line stroke="var(--brand)" stroke-width="1.8" fill="none" x1="360" y1="599" x2="360" y2="617" marker-end="url(#aB2)"/>
+        <!-- branch labels -->
+        <text font="600 11px var(--font-sans)" fill="var(--text-muted)" x="370" y="330">是</text>
+        <text font="600 11px var(--font-sans)" fill="var(--text-muted)" x="446" y="282">否</text>
+        <text font="600 11px var(--font-sans)" fill="var(--text-muted)" x="370" y="547">确认</text>
+        <text font="600 11px var(--font-sans)" fill="var(--text-muted)" x="274" y="497" text-anchor="end">修改/驳回</text>
+        <!-- Loop1: D1 否 -> Writer -->
+        <path stroke="var(--text-muted)" stroke-width="1.4" fill="none" stroke-dasharray="5 4" d="M440,287 L560,287 L560,79 L462,79" marker-end="url(#aL)"/>
+        <g transform="rotate(-90 560 183)"><rect x="490" y="175" width="140" height="16" rx="8" fill="var(--surface)" stroke="var(--border-strong)"/><text font="600 11px var(--font-sans)" fill="var(--text-muted)" x="560" y="187" text-anchor="middle">不合格 · 修改意见</text></g>
+        <text font="12px var(--font-sans)" fill="var(--text-soft)" x="600" y="72">≤ 2 次循环</text>
+        <!-- Loop2: D2 修改/驳回 -> Writer -->
+        <path stroke="var(--text-muted)" stroke-width="1.4" fill="none" stroke-dasharray="5 4" d="M280,502 L180,502 L180,79 L258,79" marker-end="url(#aL)"/>
+        <g transform="rotate(-90 180 290)"><rect x="104" y="282" width="152" height="16" rx="8" fill="var(--surface)" stroke="var(--border-strong)"/><text font="600 11px var(--font-sans)" fill="var(--text-muted)" x="180" y="294" text-anchor="middle">修改/驳回 · 老师意见</text></g>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- S4: 关键原则 -->
+<div id="s4" class="section">
+  <div class="section-header">
+    <div class="section-num green">4</div>
+    <div>
+      <div class="section-title">关键原则</div>
+      <div class="section-desc">贯穿整条架构链路的七条硬约束</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="principles">
+      <div class="principle"><div class="num">原则 01</div><div class="txt">没有证据，不写确定结论。</div></div>
+      <div class="principle"><div class="num">原则 02</div><div class="txt">没有高置信 reference_text，不做精细发音评分。</div></div>
+      <div class="principle"><div class="num">原则 03</div><div class="txt">ASR 只代表"说了什么"，不代表"发音标准"。</div></div>
+      <div class="principle"><div class="num">原则 04</div><div class="txt">LLM Reviewer 之前先做规则校验。</div></div>
+      <div class="principle"><div class="num">原则 05</div><div class="txt">Agent 循环必须有次数上限（≤ 2 次）。</div></div>
+      <div class="principle"><div class="num">原则 06</div><div class="txt">低置信内容优先暴露给老师确认。</div></div>
+      <div class="principle"><div class="num">原则 07</div><div class="txt">老师修改结果要回流，用于持续优化系统。</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S5: 成本测算 -->
+<div id="s5" class="section">
+  <div class="section-header">
+    <div class="section-num amber">5</div>
+    <div>
+      <div class="section-title">单节课程成本测算</div>
+      <div class="section-desc">60 分钟一对一中文课 · 双音轨采集 + 仅对学生中文练习片段做发音评估</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="cost-assumption">
+      <div class="item"><div class="label">音频时长</div><div class="value">双音轨 2 小时（老师 1h + 学生 1h），ASR 计费 7200 秒</div></div>
+      <div class="item"><div class="label">ASR</div><div class="value">阿里云百炼 fun-asr-flash，0.00022 元/秒</div></div>
+      <div class="item"><div class="label">发音评估</div><div class="value">仅评估学生中文练习片段，5-10 分钟</div></div>
+      <div class="item"><div class="label">LLM</div><div class="value">DeepSeek-v4-flash，报告生成 + 评审 + 修改</div></div>
+      <div class="item"><div class="label">汇率</div><div class="value">1 USD ≈ 7.2 RMB（Azure 换算用）</div></div>
+    </div>
+    <table class="cost-table">
+      <thead>
+        <tr><th>模块</th><th>计费方式</th><th>估算成本</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>百炼 Fun-ASR</td><td>0.00022 元/秒 × 7200 秒</td><td class="cost-val">¥1.58</td></tr>
+        <tr><td>Azure Pronunciation</td><td>仅评估学生 5-10 分钟中文片段</td><td class="cost-val">¥0.8 - 1.6</td></tr>
+        <tr><td>DeepSeek 报告/评审</td><td>5-10 万 input + 几千 output tokens</td><td class="cost-val">¥0.05 - 0.2</td></tr>
+        <tr><td>存储/带宽</td><td>录音临时保存</td><td class="cost-val">&lt; ¥0.1</td></tr>
+      </tbody>
+    </table>
+    <div class="cost-summary">
+      <div class="big">≈ ¥3<span class="unit">/ 节</span></div>
+      <div class="note">主要成本来自 Azure 发音评估，其次是 ASR；LLM 报告成本极低。双音轨采集是 ASR 成本翻倍的原因——如果单音轨 + diarization，ASR 只需一半费用，但会引入说话人分离误差。</div>
+    </div>
+    <ul class="cost-sensitive">
+      <li>中文练习片段仅 3-5 分钟：成本降至 ≈ ¥2.3/节</li>
+      <li>学生整小时做发音评估：Azure 成为大头，总成本升至 ≈ ¥10/节</li>
+      <li>关闭 Azure，仅 ASR + LLM：成本 ≈ ¥1.7-2/节</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="line"></div>
+  AI课堂语音记录助手 · 整体架构流程图 · 生成于 2026-07-10
+</div>
+
+<script>
+mermaid.initialize({startOnLoad:true,theme:window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'default',flowchart:{curve:'basis',useMaxWidth:true,nodeSpacing:50,rankSpacing:55,padding:20}});
+
+/* sticky nav active state */
+const sections=document.querySelectorAll('.section');
+const navLinks=document.querySelectorAll('.nav-inner a');
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(a=>a.classList.remove('active'));
+      const id=e.target.id;
+      const link=document.querySelector('.nav-inner a[href="#'+id+'"]');
+      if(link)link.classList.add('active');
+    }
+  });
+},{rootMargin:'-80px 0px -60% 0px'});
+sections.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>

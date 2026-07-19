@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>复盘总览 · AI Lesson Recorder</title>
+    <style id="theme-vars">
+/* ============================================================
+   AI Lesson Recorder — Teacher Review Workspace
+   Design Direction: Warm, Friendly Education (教育温暖亲和风)
+   Brand Prefix: lr
+   ============================================================ */
+
+/* ---------- Color Tokens (Warm Education Palette) ---------- */
+:root {
+  /* Brand surfaces — warm cream / ivory */
+  --lr-background: #FBF6EC;          /* warm ivory page */
+  --lr-foreground: #3A3225;          /* warm ink brown */
+
+  --lr-card: #FFFFFF;               /* clean card */
+  --lr-card-foreground: #3A3225;
+
+  --lr-popover: #FFFFFF;
+  --lr-popover-foreground: #3A3225;
+
+  /* Primary — warm sage green (growth + education, friendly) */
+  --lr-primary: #5B9279;
+  --lr-primary-foreground: #FFFFFF;
+  --lr-primary-soft: #E6F0E9;       /* tinted surface for active/chips */
+  --lr-primary-press: #4D7E68;
+
+  /* Muted / neutral — warm taupe */
+  --lr-muted: #F2E9D8;              /* warm beige panel */
+  --lr-muted-foreground: #8A7C66;    /* warm taupe gray text */
+
+  /* Border — warm light beige */
+  --lr-border: #E8DCC6;
+  --lr-input: #E8DCC6;
+  --lr-ring: #5B9279;
+
+  /* Warm accent — peach (highlights, illustrations) */
+  --lr-accent: #E8A87C;
+  --lr-accent-soft: #FBE9DB;
+
+  /* Semantic — warm-tuned, not clinical */
+  --lr-warning: #E0A33E;            /* warm amber */
+  --lr-warning-soft: #FBEFD6;
+  --lr-danger: #E07856;              /* warm coral (risk) */
+  --lr-danger-soft: #FAE2D8;
+  --lr-success: #5B9279;
+  --lr-success-soft: #E6F0E9;
+  --lr-info: #6FA3B5;                /* muted warm teal-blue, used sparingly */
+  --lr-info-soft: #E2EEF1;
+
+  /* Radius scale — friendly, rounded */
+  --lr-radius-sm: 10px;
+  --lr-radius-md: 14px;
+  --lr-radius-lg: 20px;
+  --lr-radius-xl: 28px;
+
+  /* Shadows — soft, warm-tinted */
+  --lr-shadow-xs: 0 1px 2px rgba(58, 50, 37, 0.05);
+  --lr-shadow-sm: 0 2px 8px rgba(58, 50, 37, 0.06);
+  --lr-shadow-md: 0 6px 20px rgba(58, 50, 37, 0.08);
+  --lr-shadow-lg: 0 14px 38px rgba(58, 50, 37, 0.10);
+
+  /* Typography */
+  --lr-font-sans: "Plus Jakarta Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --lr-font-display: "Plus Jakarta Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --lr-font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+/* ---------- Tailwind theme inline mapping ---------- */
+@theme inline {
+  --color-background: var(--lr-background);
+  --color-foreground: var(--lr-foreground);
+  --color-card: var(--lr-card);
+  --color-card-foreground: var(--lr-card-foreground);
+  --color-popover: var(--lr-popover);
+  --color-popover-foreground: var(--lr-popover-foreground);
+  --color-primary: var(--lr-primary);
+  --color-primary-foreground: var(--lr-primary-foreground);
+  --color-muted: var(--lr-muted);
+  --color-muted-foreground: var(--lr-muted-foreground);
+  --color-border: var(--lr-border);
+  --color-input: var(--lr-input);
+  --color-ring: var(--lr-ring);
+  --color-accent: var(--lr-accent);
+  --color-warning: var(--lr-warning);
+  --color-danger: var(--lr-danger);
+  --color-success: var(--lr-success);
+  --color-info: var(--lr-info);
+
+  --font-sans: var(--lr-font-sans);
+  --font-display: var(--lr-font-display);
+  --font-mono: var(--lr-font-mono);
+
+  --radius-sm: var(--lr-radius-sm);
+  --radius-md: var(--lr-radius-md);
+  --radius-lg: var(--lr-radius-lg);
+  --radius-xl: var(--lr-radius-xl);
+}
+
+/* ---------- Semantic aliases for fill-html-head.mjs ---------- */
+:root {
+  --background: var(--lr-background);
+  --foreground: var(--lr-foreground);
+  --card: var(--lr-card);
+  --card-foreground: var(--lr-card-foreground);
+  --popover: var(--lr-popover);
+  --popover-foreground: var(--lr-popover-foreground);
+  --primary: var(--lr-primary);
+  --primary-foreground: var(--lr-primary-foreground);
+  --muted: var(--lr-muted);
+  --muted-foreground: var(--lr-muted-foreground);
+  --border: var(--lr-border);
+  --input: var(--lr-input);
+  --ring: var(--lr-ring);
+  --radius-sm: var(--lr-radius-sm);
+  --radius-md: var(--lr-radius-md);
+  --radius-lg: var(--lr-radius-lg);
+  --radius-xl: var(--lr-radius-xl);
+}
+
+/* ---------- Base ---------- */
+html { font-family: var(--lr-font-sans); }
+body {
+  background: var(--lr-background);
+  color: var(--lr-foreground);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--lr-background);
+    --color-foreground: var(--lr-foreground);
+    --color-card: var(--lr-card);
+    --color-card-foreground: var(--lr-card-foreground);
+    --color-popover: var(--lr-popover);
+    --color-popover-foreground: var(--lr-popover-foreground);
+    --color-primary: var(--lr-primary);
+    --color-primary-foreground: var(--lr-primary-foreground);
+    --color-muted: var(--lr-muted);
+    --color-muted-foreground: var(--lr-muted-foreground);
+    --color-accent: var(--lr-accent);
+    --color-border: var(--lr-border);
+    --color-input: var(--lr-input);
+    --color-ring: var(--lr-ring);
+    --radius-sm: var(--lr-radius-sm);
+    --radius-md: var(--lr-radius-md);
+    --radius-lg: var(--lr-radius-lg);
+    --radius-xl: var(--lr-radius-xl);
+  }
+  @layer base {
+    body { background: var(--lr-background); color: var(--lr-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--lr-background); }
+      .text-background { color: var(--lr-background); }
+      .border-background { border-color: var(--lr-background); }
+      .ring-background { --tw-ring-color: var(--lr-background); }
+      .bg-foreground { background-color: var(--lr-foreground); }
+      .text-foreground { color: var(--lr-foreground); }
+      .border-foreground { border-color: var(--lr-foreground); }
+      .ring-foreground { --tw-ring-color: var(--lr-foreground); }
+      .bg-card { background-color: var(--lr-card); }
+      .text-card { color: var(--lr-card); }
+      .border-card { border-color: var(--lr-card); }
+      .ring-card { --tw-ring-color: var(--lr-card); }
+      .bg-card-foreground { background-color: var(--lr-card-foreground); }
+      .text-card-foreground { color: var(--lr-card-foreground); }
+      .border-card-foreground { border-color: var(--lr-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--lr-card-foreground); }
+      .bg-popover { background-color: var(--lr-popover); }
+      .text-popover { color: var(--lr-popover); }
+      .border-popover { border-color: var(--lr-popover); }
+      .ring-popover { --tw-ring-color: var(--lr-popover); }
+      .bg-popover-foreground { background-color: var(--lr-popover-foreground); }
+      .text-popover-foreground { color: var(--lr-popover-foreground); }
+      .border-popover-foreground { border-color: var(--lr-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--lr-popover-foreground); }
+      .bg-primary { background-color: var(--lr-primary); }
+      .text-primary { color: var(--lr-primary); }
+      .border-primary { border-color: var(--lr-primary); }
+      .ring-primary { --tw-ring-color: var(--lr-primary); }
+      .bg-primary-foreground { background-color: var(--lr-primary-foreground); }
+      .text-primary-foreground { color: var(--lr-primary-foreground); }
+      .border-primary-foreground { border-color: var(--lr-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--lr-primary-foreground); }
+      .bg-muted { background-color: var(--lr-muted); }
+      .text-muted { color: var(--lr-muted); }
+      .border-muted { border-color: var(--lr-muted); }
+      .ring-muted { --tw-ring-color: var(--lr-muted); }
+      .bg-muted-foreground { background-color: var(--lr-muted-foreground); }
+      .text-muted-foreground { color: var(--lr-muted-foreground); }
+      .border-muted-foreground { border-color: var(--lr-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--lr-muted-foreground); }
+      .bg-accent { background-color: var(--lr-accent); }
+      .text-accent { color: var(--lr-accent); }
+      .border-accent { border-color: var(--lr-accent); }
+      .ring-accent { --tw-ring-color: var(--lr-accent); }
+      .bg-border { background-color: var(--lr-border); }
+      .text-border { color: var(--lr-border); }
+      .border-border { border-color: var(--lr-border); }
+      .ring-border { --tw-ring-color: var(--lr-border); }
+      .bg-input { background-color: var(--lr-input); }
+      .text-input { color: var(--lr-input); }
+      .border-input { border-color: var(--lr-input); }
+      .ring-input { --tw-ring-color: var(--lr-input); }
+      .bg-ring { background-color: var(--lr-ring); }
+      .text-ring { color: var(--lr-ring); }
+      .border-ring { border-color: var(--lr-ring); }
+      .ring-ring { --tw-ring-color: var(--lr-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+      <!-- ============ TOP NAV ============ -->
+      <header class="sticky top-0 z-30" style="background: var(--lr-card); border-bottom: 1px solid var(--lr-border); box-shadow: var(--lr-shadow-sm);">
+        <div class="mx-auto max-w-[1280px] px-6 lg:px-10 h-16 flex items-center justify-between gap-4 lg:gap-6">
+          <!-- Left: back + brand -->
+          <div class="flex items-center gap-3 lg:gap-4 min-w-0">
+            <button data-dom-id="topnav-back-list" type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[10px] text-[13px] font-medium transition-colors hover:bg-[var(--lr-muted)]" style="color: var(--lr-muted-foreground);">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              <span class="whitespace-nowrap hidden sm:inline">返回列表</span>
+            </button>
+            <div class="w-px h-6 shrink-0" style="background: var(--lr-border);"></div>
+            <div class="flex items-center gap-2.5 shrink-0">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background: var(--lr-primary-soft);">
+                <i data-lucide="graduation-cap" class="w-5 h-5" style="color: var(--lr-primary);"></i>
+              </div>
+              <span class="text-[15px] font-bold whitespace-nowrap" style="color: var(--lr-foreground);">AI Lesson Recorder</span>
+            </div>
+          </div>
+          <!-- Center: student context -->
+          <div class="hidden md:flex items-center gap-2.5 min-w-0 flex-1 justify-center">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0" style="background: var(--lr-primary-soft); color: var(--lr-primary);">AC</div>
+            <div class="flex items-baseline gap-1.5 text-[14px] min-w-0">
+              <span class="font-semibold whitespace-nowrap" style="color: var(--lr-foreground);">Alex Chen</span>
+              <span class="whitespace-nowrap truncate" style="color: var(--lr-muted-foreground);">· 餐厅点餐 · 2026-07-18 · 30分钟</span>
+            </div>
+          </div>
+          <!-- Right: actions -->
+          <div class="flex items-center gap-2 lg:gap-3 shrink-0">
+            <button type="button" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[13px] font-semibold transition-colors hover:bg-[var(--lr-muted)]" style="border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+              <i data-lucide="save" class="w-4 h-4"></i>
+              <span class="whitespace-nowrap">保存草稿</span>
+            </button>
+            <div class="flex flex-col items-center gap-0.5">
+              <button type="button" disabled class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[13px] font-semibold cursor-not-allowed" style="background: var(--lr-muted); color: var(--lr-muted-foreground);">
+                <i data-lucide="file-check" class="w-4 h-4"></i>
+                <span class="whitespace-nowrap hidden lg:inline">生成最终报告</span>
+                <span class="whitespace-nowrap lg:hidden">报告</span>
+              </button>
+              <span class="text-[11px] whitespace-nowrap hidden lg:block" style="color: var(--lr-muted-foreground);">需先完成审核</span>
+            </div>
+            <button type="button" class="w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-[var(--lr-muted)]" style="border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+              <i data-lucide="languages" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- ============ STEP BAR ============ -->
+      <section class="mx-auto max-w-[1280px] px-6 lg:px-10 pt-6">
+        <div class="flex items-start">
+          <!-- Step 1 active -->
+          <div class="flex flex-col items-center gap-2 shrink-0" style="width: 88px;">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold" style="background: var(--lr-primary); color: var(--lr-primary-foreground);">1</div>
+            <span class="text-[13px] font-semibold whitespace-nowrap" style="color: var(--lr-primary);">复盘总览</span>
+          </div>
+          <div class="flex-1 h-[2px] mt-4" style="background: var(--lr-border);"></div>
+          <!-- Step 2 -->
+          <div class="flex flex-col items-center gap-2 shrink-0" style="width: 88px;">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold" style="background: var(--lr-muted); color: var(--lr-muted-foreground);">2</div>
+            <span class="text-[13px] whitespace-nowrap" style="color: var(--lr-muted-foreground);">报告草稿</span>
+          </div>
+          <div class="flex-1 h-[2px] mt-4" style="background: var(--lr-border);"></div>
+          <!-- Step 3 clickable with badge -->
+          <div data-dom-id="step-goto-review" class="flex flex-col items-center gap-2 shrink-0 cursor-pointer group" style="width: 88px;">
+            <div class="relative">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-colors group-hover:bg-[var(--lr-primary-soft)] group-hover:text-[var(--lr-primary)]" style="background: var(--lr-muted); color: var(--lr-muted-foreground);">3</div>
+              <span class="absolute -top-1 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[10px] font-bold leading-none" style="background: var(--lr-warning); color: var(--lr-primary-foreground);">3</span>
+            </div>
+            <span class="text-[13px] whitespace-nowrap transition-colors group-hover:text-[var(--lr-primary)]" style="color: var(--lr-muted-foreground);">待确认项</span>
+          </div>
+          <div class="flex-1 h-[2px] mt-4" style="background: var(--lr-border);"></div>
+          <!-- Step 4 -->
+          <div class="flex flex-col items-center gap-2 shrink-0" style="width: 88px;">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold" style="background: var(--lr-muted); color: var(--lr-muted-foreground);">4</div>
+            <span class="text-[13px] whitespace-nowrap" style="color: var(--lr-muted-foreground);">报告交付</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ STATUS SUMMARY BAND ============ -->
+      <section class="mx-auto max-w-[1280px] px-6 lg:px-10 mt-7">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Tile 1: 待确认 -->
+          <div class="rounded-[14px] p-4 flex items-center gap-3" style="background: var(--lr-card); box-shadow: var(--lr-shadow-sm); border: 1px solid var(--lr-border);">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background: var(--lr-warning-soft);">
+              <i data-lucide="circle-alert" class="w-5 h-5" style="color: var(--lr-warning);"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[22px] font-bold leading-none whitespace-nowrap" style="color: var(--lr-warning);">7</div>
+              <div class="text-[12px] mt-1.5 whitespace-nowrap" style="color: var(--lr-muted-foreground);">待确认</div>
+            </div>
+          </div>
+          <!-- Tile 2: 审核进度 -->
+          <div class="rounded-[14px] p-4 flex items-center gap-3" style="background: var(--lr-card); box-shadow: var(--lr-shadow-sm); border: 1px solid var(--lr-border);">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background: var(--lr-muted);">
+              <i data-lucide="circle-dot" class="w-5 h-5" style="color: var(--lr-muted-foreground);"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[22px] font-bold leading-none whitespace-nowrap" style="color: var(--lr-muted-foreground);">0%</div>
+              <div class="text-[12px] mt-1.5 whitespace-nowrap" style="color: var(--lr-muted-foreground);">审核进度</div>
+            </div>
+          </div>
+          <!-- Tile 3: 课后作业 -->
+          <div class="rounded-[14px] p-4 flex items-center gap-3" style="background: var(--lr-card); box-shadow: var(--lr-shadow-sm); border: 1px solid var(--lr-border);">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background: var(--lr-accent-soft);">
+              <i data-lucide="clipboard-list" class="w-5 h-5" style="color: var(--lr-accent);"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[22px] font-bold leading-none whitespace-nowrap" style="color: var(--lr-accent);">3</div>
+              <div class="text-[12px] mt-1.5 whitespace-nowrap" style="color: var(--lr-muted-foreground);">课后作业</div>
+            </div>
+          </div>
+          <!-- Tile 4: 时长 -->
+          <div class="rounded-[14px] p-4 flex items-center gap-3" style="background: var(--lr-card); box-shadow: var(--lr-shadow-sm); border: 1px solid var(--lr-border);">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background: var(--lr-info-soft);">
+              <i data-lucide="clock" class="w-5 h-5" style="color: var(--lr-info);"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[18px] font-bold leading-none whitespace-nowrap" style="color: var(--lr-info);">30分钟</div>
+              <div class="text-[12px] mt-1.5 whitespace-nowrap" style="color: var(--lr-muted-foreground);">时长</div>
+            </div>
+          </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="mt-4 flex items-center gap-3">
+          <div class="flex-1 h-2 rounded-full overflow-hidden" style="background: var(--lr-muted);">
+            <div class="h-full rounded-full" style="width: 2%; background: var(--lr-primary);"></div>
+          </div>
+          <span class="text-[13px] whitespace-nowrap" style="color: var(--lr-muted-foreground);">0 / 7 已确认</span>
+        </div>
+      </section>
+
+      <!-- ============ AI SUMMARY HERO CARD ============ -->
+      <section class="mx-auto max-w-[1280px] px-6 lg:px-10 mt-7">
+        <div class="rounded-[20px] p-6 lg:p-7 flex flex-col md:flex-row gap-6 lg:gap-7" style="background: var(--lr-card); box-shadow: var(--lr-shadow-md); border: 1px solid var(--lr-border);">
+          <!-- Left: illustration -->
+          <div class="shrink-0 mx-auto md:mx-0">
+            <div class="relative w-40 h-40 rounded-[28px] flex items-center justify-center overflow-hidden" style="background: var(--lr-accent-soft);">
+              <i data-lucide="sparkles" class="w-14 h-14" style="color: var(--lr-primary); stroke-width: 1.5;"></i>
+              <span class="absolute w-2.5 h-2.5 rounded-full lr-dot" style="top: 18px; left: 22px; background: var(--lr-accent);"></span>
+              <span class="absolute w-1.5 h-1.5 rounded-full lr-dot lr-dot-2" style="top: 38px; right: 26px; background: var(--lr-primary);"></span>
+              <span class="absolute w-2 h-2 rounded-full lr-dot lr-dot-3" style="bottom: 26px; left: 28px; background: var(--lr-warning);"></span>
+              <span class="absolute w-1.5 h-1.5 rounded-full lr-dot lr-dot-4" style="bottom: 42px; right: 22px; background: var(--lr-info);"></span>
+            </div>
+          </div>
+          <!-- Right: content -->
+          <div class="flex-1 min-w-0 flex flex-col">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-4 h-4" style="color: var(--lr-accent);"></i>
+              <span class="text-[13px] font-semibold uppercase tracking-wide" style="color: var(--lr-accent);">AI 课后复盘</span>
+            </div>
+            <h1 class="mt-2 text-[22px] lg:text-[24px] font-bold leading-tight" style="color: var(--lr-foreground); text-wrap: balance; word-break: keep-all; overflow-wrap: break-word;">Alex Chen 的课后复盘已准备好</h1>
+            <p class="mt-3 text-[14px] lg:text-[15px] leading-relaxed" style="color: var(--lr-muted-foreground);">本节课围绕餐厅点餐展开，重点练习"我想要..."句型、饮料量词"杯"，以及"多少钱"的价格询问表达。学生已能完成简单点餐，量词"杯"的纠错已掌握，建议下节课拓展价格询问与"不要辣"等否定表达。</p>
+            <!-- Progress row -->
+            <div class="mt-4 flex items-center gap-3">
+              <span class="text-[13px] whitespace-nowrap" style="color: var(--lr-muted-foreground);">0 / 7 已确认</span>
+              <div class="flex-1 h-1.5 rounded-full overflow-hidden" style="background: var(--lr-muted);">
+                <div class="h-full rounded-full" style="width: 2%; background: var(--lr-warning);"></div>
+              </div>
+            </div>
+            <!-- CTA row -->
+            <div class="mt-5 flex flex-wrap items-center gap-3">
+              <button data-dom-id="hero-goto-review" type="button" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-[14px] text-[14px] font-semibold transition-colors hover:opacity-90" style="background: var(--lr-primary); color: var(--lr-primary-foreground);">
+                <span class="whitespace-nowrap">开始审核</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+              <button type="button" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-[14px] text-[14px] font-semibold transition-colors hover:bg-[var(--lr-muted)]" style="border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <span class="whitespace-nowrap">查看报告草稿</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ AUDIO + TRANSCRIPT TWO COLUMN ============ -->
+      <section class="mx-auto max-w-[1280px] px-6 lg:px-10 mt-7">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-5 lg:gap-6">
+          <!-- LEFT: 课堂录音 (2/5 = 40%) -->
+          <div class="lg:col-span-2 rounded-[20px] p-6" style="background: var(--lr-card); box-shadow: var(--lr-shadow-sm); border: 1px solid var(--lr-border);">
+            <!-- Header -->
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background: var(--lr-primary-soft);">
+                  <i data-lucide="mic" class="w-5 h-5" style="color: var(--lr-primary);"></i>
+                </div>
+                <h2 class="text-[18px] font-bold truncate" style="color: var(--lr-foreground);">课堂录音</h2>
+              </div>
+              <span class="text-[12px] px-2 py-0.5 rounded-full whitespace-nowrap" style="background: var(--lr-muted); color: var(--lr-muted-foreground);">未上传</span>
+            </div>
+            <!-- Teacher track -->
+            <div class="mt-4 rounded-[14px] p-4 flex items-center gap-3" style="background: var(--lr-muted);">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0" style="background: var(--lr-primary-soft); color: var(--lr-primary);">T</div>
+              <div class="min-w-0 flex-1">
+                <div class="text-[14px] font-semibold truncate" style="color: var(--lr-foreground);">老师音轨</div>
+                <div class="text-[12px] truncate" style="color: var(--lr-muted-foreground);">0 KB</div>
+              </div>
+              <button type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[10px] text-[12px] font-medium transition-colors hover:opacity-80 shrink-0" style="border: 1px solid var(--lr-border); color: var(--lr-foreground); background: var(--lr-card);">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                <span class="whitespace-nowrap">选择音频文件</span>
+              </button>
+            </div>
+            <!-- Student track -->
+            <div class="mt-2.5 rounded-[14px] p-4 flex items-center gap-3" style="background: var(--lr-muted);">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0" style="background: var(--lr-accent-soft); color: var(--lr-accent);">S</div>
+              <div class="min-w-0 flex-1">
+                <div class="text-[14px] font-semibold truncate" style="color: var(--lr-foreground);">学生音轨</div>
+                <div class="text-[12px] truncate" style="color: var(--lr-muted-foreground);">0 KB</div>
+              </div>
+              <button type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[10px] text-[12px] font-medium transition-colors hover:opacity-80 shrink-0" style="border: 1px solid var(--lr-border); color: var(--lr-foreground); background: var(--lr-card);">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                <span class="whitespace-nowrap">选择音频文件</span>
+              </button>
+            </div>
+            <!-- Action row -->
+            <div class="mt-4 flex items-center gap-2.5">
+              <button type="button" disabled class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[13px] font-semibold cursor-not-allowed flex-1 justify-center" style="background: var(--lr-muted); color: var(--lr-muted-foreground);">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <span class="whitespace-nowrap">重新处理音频</span>
+              </button>
+              <button type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[13px] font-semibold transition-colors hover:bg-[var(--lr-primary-soft)] flex-1 justify-center" style="border: 1px solid var(--lr-primary); color: var(--lr-primary); background: var(--lr-card);">
+                <i data-lucide="play" class="w-4 h-4"></i>
+                <span class="whitespace-nowrap">加载演示样本</span>
+              </button>
+            </div>
+            <!-- Pipeline status -->
+            <div class="mt-4 pt-4" style="border-top: 1px solid var(--lr-border);">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-[10px] text-[12px] font-medium whitespace-nowrap" style="background: var(--lr-success-soft); color: var(--lr-success);">
+                  <i data-lucide="check" class="w-3 h-3"></i>转写
+                </span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-[10px] text-[12px] font-medium whitespace-nowrap" style="background: var(--lr-success-soft); color: var(--lr-success);">
+                  <i data-lucide="check" class="w-3 h-3"></i>抽取
+                </span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-[10px] text-[12px] font-medium whitespace-nowrap" style="background: var(--lr-success-soft); color: var(--lr-success);">
+                  <i data-lucide="check" class="w-3 h-3"></i>评分
+                </span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-[10px] text-[12px] font-medium whitespace-nowrap" style="background: var(--lr-success-soft); color: var(--lr-success);">
+                  <i data-lucide="check" class="w-3 h-3"></i>摘要
+                </span>
+              </div>
+              <div class="mt-2.5 text-[12px]" style="color: var(--lr-muted-foreground);">处理完成 · 14 段转写</div>
+            </div>
+          </div>
+
+          <!-- RIGHT: 课堂转写 (3/5 = 60%) -->
+          <div class="lg:col-span-3 rounded-[20px] p-6" style="background: var(--lr-card); box-shadow: var(--lr-shadow-sm); border: 1px solid var(--lr-border);">
+            <!-- Header -->
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background: var(--lr-primary-soft);">
+                  <i data-lucide="message-square-text" class="w-5 h-5" style="color: var(--lr-primary);"></i>
+                </div>
+                <h2 class="text-[18px] font-bold truncate" style="color: var(--lr-foreground);">课堂转写（含时间戳）</h2>
+              </div>
+              <span class="text-[12px] px-2 py-0.5 rounded-full whitespace-nowrap" style="background: var(--lr-muted); color: var(--lr-muted-foreground);">14 段</span>
+            </div>
+            <!-- Transcript list -->
+            <div class="mt-4 flex flex-col gap-3">
+              <!-- Segment 1: 00:00 老师 -->
+              <div class="flex items-start gap-2.5">
+                <span class="text-[12px] mt-1.5 shrink-0 whitespace-nowrap" style="color: var(--lr-muted-foreground); font-family: var(--lr-font-mono);">00:00</span>
+                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap mt-1" style="background: var(--lr-primary-soft); color: var(--lr-primary);">老师</span>
+                <div class="flex-1 min-w-0 rounded-[14px] px-3.5 py-2.5 text-[14px] leading-relaxed" style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+                  Today we are practicing how to order food in Chinese. The key sentence is 我想要...
+                </div>
+              </div>
+              <!-- Segment 2: 00:35 老师 -->
+              <div class="flex items-start gap-2.5">
+                <span class="text-[12px] mt-1.5 shrink-0 whitespace-nowrap" style="color: var(--lr-muted-foreground); font-family: var(--lr-font-mono);">00:35</span>
+                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap mt-1" style="background: var(--lr-primary-soft); color: var(--lr-primary);">老师</span>
+                <div class="flex-1 min-w-0 rounded-[14px] px-3.5 py-2.5 text-[14px] leading-relaxed" style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+                  For drinks, we usually use the measure word 杯. Please repeat after me: 我想要一杯果汁。
+                </div>
+              </div>
+              <!-- Segment 3: 00:52 学生 HIGHLIGHTED -->
+              <div class="flex items-start gap-2.5">
+                <span class="text-[12px] mt-1.5 shrink-0 whitespace-nowrap" style="color: var(--lr-muted-foreground); font-family: var(--lr-font-mono);">00:52</span>
+                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap mt-1" style="background: var(--lr-accent-soft); color: var(--lr-accent);">学生</span>
+                <div class="flex-1 min-w-0 rounded-[14px] px-3.5 py-2.5 text-[14px] leading-relaxed" style="background: var(--lr-warning-soft); border-left: 3px solid var(--lr-warning); color: var(--lr-foreground);">
+                  <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <span class="min-w-0">我想要一个果汁。</span>
+                    <span class="shrink-0 inline-flex items-center gap-1.5 px-2 py-1 rounded-[10px] text-[11px] font-medium whitespace-nowrap" style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-warning);">
+                      <i data-lucide="play" class="w-3 h-3"></i>
+                      <span>课堂证据 ·</span>
+                      <span style="font-family: var(--lr-font-mono);">00:52</span>
+                      <i data-lucide="audio-waveform" class="w-3 h-3"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <!-- Segment 4: 01:05 老师 -->
+              <div class="flex items-start gap-2.5">
+                <span class="text-[12px] mt-1.5 shrink-0 whitespace-nowrap" style="color: var(--lr-muted-foreground); font-family: var(--lr-font-mono);">01:05</span>
+                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap mt-1" style="background: var(--lr-primary-soft); color: var(--lr-primary);">老师</span>
+                <div class="flex-1 min-w-0 rounded-[14px] px-3.5 py-2.5 text-[14px] leading-relaxed" style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+                  Good try. Here we say 一杯果汁, not 一个果汁. 杯 is used for a cup or glass of drink.
+                </div>
+              </div>
+              <!-- Segment 5: 01:59 学生 -->
+              <div class="flex items-start gap-2.5">
+                <span class="text-[12px] mt-1.5 shrink-0 whitespace-nowrap" style="color: var(--lr-muted-foreground); font-family: var(--lr-font-mono);">01:59</span>
+                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap mt-1" style="background: var(--lr-accent-soft); color: var(--lr-accent);">学生</span>
+                <div class="flex-1 min-w-0 rounded-[14px] px-3.5 py-2.5 text-[14px] leading-relaxed" style="background: var(--lr-primary-soft); color: var(--lr-foreground);">
+                  为什么用"杯"？
+                </div>
+              </div>
+              <!-- Segment 6: 02:10 老师 -->
+              <div class="flex items-start gap-2.5">
+                <span class="text-[12px] mt-1.5 shrink-0 whitespace-nowrap" style="color: var(--lr-muted-foreground); font-family: var(--lr-font-mono);">02:10</span>
+                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap mt-1" style="background: var(--lr-primary-soft); color: var(--lr-primary);">老师</span>
+                <div class="flex-1 min-w-0 rounded-[14px] px-3.5 py-2.5 text-[14px] leading-relaxed" style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+                  Because 果汁 is a drink. In Chinese, drinks often use 杯. For noodles, we can say 一碗面条 or 一份面条.
+                </div>
+              </div>
+              <!-- Segment 7: 02:37 学生 -->
+              <div class="flex items-start gap-2.5">
+                <span class="text-[12px] mt-1.5 shrink-0 whitespace-nowrap" style="color: var(--lr-muted-foreground); font-family: var(--lr-font-mono);">02:37</span>
+                <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap mt-1" style="background: var(--lr-accent-soft); color: var(--lr-accent);">学生</span>
+                <div class="flex-1 min-w-0 rounded-[14px] px-3.5 py-2.5 text-[14px] leading-relaxed" style="background: var(--lr-primary-soft); color: var(--lr-foreground);">
+                  我想要一杯果汁和一份面条。
+                </div>
+              </div>
+            </div>
+            <!-- View all -->
+            <div class="mt-4 pt-4" style="border-top: 1px solid var(--lr-border);">
+              <a href="#" class="inline-flex items-center gap-1 text-[13px] font-medium transition-colors hover:opacity-70" style="color: var(--lr-muted-foreground);">
+                <span class="whitespace-nowrap">查看全部 14 段</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ FOOTER INFO STRIP ============ -->
+      <section class="mx-auto max-w-[1280px] px-6 lg:px-10 mt-7 mb-10">
+        <div class="rounded-[14px] p-3.5 flex items-center gap-2.5" style="background: var(--lr-muted);">
+          <i data-lucide="info" class="w-4 h-4 shrink-0" style="color: var(--lr-muted-foreground);"></i>
+          <span class="text-[13px]" style="color: var(--lr-muted-foreground);">AI 生成内容仅供参考，发音评分来自模型词级评分，最终以老师确认为准。</span>
+        </div>
+      </section>
+    </main>
+    <style>
+      @keyframes lr-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      .lr-dot { animation: lr-float 3s ease-in-out infinite; }
+      .lr-dot-2 { animation-delay: 0.6s; }
+      .lr-dot-3 { animation-delay: 1.2s; }
+      .lr-dot-4 { animation-delay: 1.8s; }
+      @media (prefers-reduced-motion: reduce) {
+        .lr-dot { animation: none; }
+      }
+    </style>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

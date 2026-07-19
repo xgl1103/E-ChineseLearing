@@ -1,0 +1,104 @@
+{
+  "project": {
+    "name": "AI Lesson Recorder · 暖色教育风重设计",
+    "deviceType": "desktop",
+    "designProjectPath": "f:\\code\\e-chineselearing\\design\\lesson-recorder-redesign",
+    "cssPath": "f:\\code\\e-chineselearing\\design\\lesson-recorder-redesign\\colors_and_type.css",
+    "brandPrefix": "lr",
+    "language": "zh",
+    "intentProfile": {
+      "caseFamily": "free_exploration",
+      "operatingMode": "free-explore",
+      "routingReason": "New design project, no active Design Library, no restore target, 3 stateful desktop pages → free-fast stateful lane."
+    },
+    "contextReadBudget": {
+      "workflowFileReadLimit": 1,
+      "largeWorkflowFilesCachedInSummary": [],
+      "restoreInputsCached": [],
+      "subAgentReadsFullSummary": false
+    },
+    "styleContinuityAnchors": {
+      "direction": "Warm, friendly education (教育温暖亲和风). Less cold-tool, more human classroom.",
+      "palette": {
+        "background": "#FBF6EC warm ivory",
+        "card": "#FFFFFF",
+        "ink": "#3A3225 warm brown",
+        "mutedText": "#8A7C66 warm taupe",
+        "border": "#E8DCC6 warm beige",
+        "primary": "#5B9279 warm sage green (growth + education)",
+        "primarySoft": "#E6F0E9 tinted surface for active/chips",
+        "accent": "#E8A87C warm peach (highlights, illustrations)",
+        "warning": "#E0A33E warm amber",
+        "danger": "#E07856 warm coral (risk)",
+        "info": "#6FA3B5 muted warm teal-blue (use sparingly)"
+      },
+      "principles": [
+        "Warm ivory background everywhere — never pure #F8FAFC cold gray. Cards are pure white with warm beige 1px borders.",
+        "Reduce colored pill noise: max ONE semantic color per card (risk level). Replace green/blue/amber/red quad-colored ribbons with warm primary + ONE accent.",
+        "Generous breathing room: card padding 24-28px, section gaps 28-36px, content max-width 1280px centered with 40px gutters.",
+        "Friendly rounded corners: cards 20px (lg), buttons 14px (md), chips 10px (sm). Avatars fully round.",
+        "Soft warm-tinted shadows: use --lr-shadow-sm / --lr-shadow-md. Never harsh black drop-shadows.",
+        "Larger, friendlier type: page titles 28-32px / 700; section heads 18-20px / 700; body 14-15px. Use display font for titles.",
+        "Add warmth via small human touches: student avatar with initials in soft colored circle, topic color stripe on cards, friendly empty-state illustration spots, waveform-style audio chips.",
+        "Replace the dark navy top bar with a clean white/cream top bar + 1px warm border + soft shadow. Friendlier and lighter.",
+        "Step bar: 4 steps as connected progress dots (numbered circles + labels + connector line). Active step filled primary, completed steps soft-green with check, future steps muted.",
+        "Status badges: soft tinted background + colored dot + dark text (e.g. amber-soft + amber dot + '待审核'), never hard solid color fills.",
+        "Evidence timestamp chips: small pill with play-triangle icon + '00:35' mono + waveform bars hint — reads as an audio clip, not a plain button."
+      ],
+      "typography": {
+        "display": "Plus Jakarta Sans (titles, English) + Noto Sans SC (Chinese)",
+        "body": "Plus Jakarta Sans + Noto Sans SC",
+        "mono": "JetBrains Mono (timestamps, IDs)",
+        "weights": "400 / 500 / 600 / 700"
+      },
+      "iconography": "lucide-react icons via <i data-lucide> with 1.5-2px stroke, rendered inside soft circular tinted backgrounds (primary-soft / accent-soft). Friendly, not technical.",
+      "components": {
+        "topBar": "white/cream bg, 1px bottom warm border, soft shadow, h-16, brand mark left (warm green leaf/book icon + 'AI Lesson Recorder'), contextual center (student name when in workspace), actions right (save draft / generate report outline buttons, EN toggle circle)",
+        "courseCard": "white card 20px radius, 24px padding, topic color stripe top-left 4px, avatar circle top-right, student name + meta, status dot+label, action button bottom. Hover: lift + shadow-md.",
+        "stepBar": "horizontal row of 4 numbered circles connected by a 2px line. Circle 28px. Active: filled primary + white number + bold label. Completed: primary-soft + check icon. Future: muted bg + muted number.",
+        "summaryHeroCard": "large white card, accent-soft tinted left edge or top banner, friendly illustration spot, big title, summary text, progress ring + actions.",
+        "reviewCard": "white card, risk-level left border (4px amber/coral/info), title row with confirm checkbox (custom rounded), message, evidence clip chips row, teacher note textarea (warm muted bg), ignore button ghost.",
+        "evidenceChip": "pill: play-triangle in primary circle + mono timestamp + 3-bar waveform icon. Reads as an audio clip."
+      }
+    },
+    "cssPreflightEvidence": {
+      "applies": true,
+      "status": "passed",
+      "command": "node c:\\Users\\lenovo\\.trae-cn\\builtin\\design\\default\\skills\\solo-design\\script\\fill-html-head.mjs f:\\code\\e-chineselearing\\design\\lesson-recorder-redesign\\colors_and_type.css f:\\code\\e-chineselearing\\design\\lesson-recorder-redesign\\.preflight\\preflight.html --title=\"Preflight\" --lang=zh --prefix=lr",
+      "brandPrefix": "lr",
+      "checks": {
+        "themeVars": "present",
+        "semanticTokenFallback": "present",
+        "themeInline": "present",
+        "tailwindCdn": "present",
+        "htmlClass": "present",
+        "semanticMappings": "resolved"
+      },
+      "retryCount": 0,
+      "blockingReason": null
+    }
+  },
+  "pages": [
+    {
+      "nodeId": "page-course-center",
+      "htmlSrc": "pages/course-center.html",
+      "title": "课程中心",
+      "writeMode": "SectionPlanThenWrite",
+      "stateRole": "base"
+    },
+    {
+      "nodeId": "page-workspace-overview",
+      "htmlSrc": "pages/workspace-overview.html",
+      "title": "复盘总览",
+      "writeMode": "SectionPlanThenWrite",
+      "stateRole": "base"
+    },
+    {
+      "nodeId": "page-workspace-review",
+      "htmlSrc": "pages/workspace-review.html",
+      "title": "待确认项",
+      "writeMode": "SectionPlanThenWrite",
+      "stateRole": "base"
+    }
+  ]
+}

@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eChineseLearning AI Learning Coach Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script defer src="./script.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Demo navigation">
+        <div class="brand">
+          <div class="brand-mark">中</div>
+          <div>
+            <strong>AI Learning Coach</strong>
+            <span>for eChineseLearning</span>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="Main sections">
+          <button class="nav-item active" data-view="overview" type="button">
+            <i data-lucide="layout-dashboard"></i>
+            <span>学习诊断</span>
+          </button>
+          <button class="nav-item" data-view="practice" type="button">
+            <i data-lucide="messages-square"></i>
+            <span>AI 陪练</span>
+          </button>
+          <button class="nav-item" data-view="teacher" type="button">
+            <i data-lucide="clipboard-check"></i>
+            <span>教师助手</span>
+          </button>
+          <button class="nav-item" data-view="parent" type="button">
+            <i data-lucide="send"></i>
+            <span>家长报告</span>
+          </button>
+        </nav>
+
+        <section class="learner-panel" aria-label="Current learner">
+          <div class="avatar-wrap">
+            <div class="avatar">A</div>
+            <span class="status-dot"></span>
+          </div>
+          <h2>Alex Chen</h2>
+          <p>10 岁 · 海外华裔 · YCT 3</p>
+          <div class="learner-tags">
+            <span>目标: 流利表达</span>
+            <span>每周 2 节课</span>
+            <span>老师: Ms. Lin</span>
+          </div>
+        </section>
+
+        <section class="metric-strip" aria-label="Business metrics">
+          <div>
+            <span class="metric-value">-42%</span>
+            <span class="metric-label">课后反馈耗时</span>
+          </div>
+          <div>
+            <span class="metric-value">+31%</span>
+            <span class="metric-label">课后练习完成</span>
+          </div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">面试演示原型</p>
+            <h1>真人中文课后的 AI 学习闭环</h1>
+          </div>
+          <div class="topbar-actions">
+            <button class="icon-btn" type="button" title="刷新模拟数据" id="refreshData">
+              <i data-lucide="refresh-cw"></i>
+            </button>
+            <button class="primary-btn" type="button" id="generatePlan">
+              <i data-lucide="sparkles"></i>
+              生成本周计划
+            </button>
+          </div>
+        </header>
+
+        <section class="demo-banner" aria-label="Product story">
+          <div class="banner-copy">
+            <span>产品定位</span>
+            <strong>不替代真人老师，而是把一对一课堂延展到课前、课后和家长沟通。</strong>
+          </div>
+          <div class="banner-flow" aria-label="Learning loop">
+            <div>课堂记录</div>
+            <i data-lucide="arrow-right"></i>
+            <div>AI 分析</div>
+            <i data-lucide="arrow-right"></i>
+            <div>个性练习</div>
+            <i data-lucide="arrow-right"></i>
+            <div>老师复用</div>
+          </div>
+        </section>
+
+        <section class="view active" id="overview">
+          <div class="grid two-col">
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Lesson Intelligence</p>
+                  <h2>本节课 AI 诊断</h2>
+                </div>
+                <span class="pill success">已同步给老师</span>
+              </div>
+              <div class="score-layout">
+                <div class="radial-score" style="--score: 76">
+                  <span>76</span>
+                  <small>综合掌握</small>
+                </div>
+                <div class="diagnosis-list">
+                  <div>
+                    <strong>强项</strong>
+                    <p>能在“点餐”和“介绍家庭”场景中完整回答问题。</p>
+                  </div>
+                  <div>
+                    <strong>待强化</strong>
+                    <p>三声变调、量词“杯/份/张”的使用不稳定。</p>
+                  </div>
+                  <div>
+                    <strong>下节课建议</strong>
+                    <p>用餐厅角色扮演复现 12 个高频句型。</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Learning Path</p>
+                  <h2>个性化学习路径</h2>
+                </div>
+                <button class="small-btn" type="button" id="rebalancePath">
+                  <i data-lucide="sliders-horizontal"></i>
+                  重排
+                </button>
+              </div>
+              <div class="timeline" id="learningPath">
+                <div class="timeline-item done">
+                  <span></span>
+                  <div>
+                    <strong>复习家庭成员表达</strong>
+                    <p>已完成 · 正确率 92%</p>
+                  </div>
+                </div>
+                <div class="timeline-item active">
+                  <span></span>
+                  <div>
+                    <strong>餐厅点餐与数量表达</strong>
+                    <p>进行中 · 建议 15 分钟/天</p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <span></span>
+                  <div>
+                    <strong>录音纠音: 三声变调</strong>
+                    <p>待开始 · AI 语音反馈</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid three-col">
+            <article class="insight-card">
+              <i data-lucide="target"></i>
+              <strong>业务价值</strong>
+              <p>把课后反馈从“人工写总结”变成“AI 初稿 + 老师确认”。</p>
+            </article>
+            <article class="insight-card">
+              <i data-lucide="activity"></i>
+              <strong>核心指标</strong>
+              <p>练习完成率、老师反馈耗时、家长打开率、续费率。</p>
+            </article>
+            <article class="insight-card">
+              <i data-lucide="shield-check"></i>
+              <strong>质量控制</strong>
+              <p>AI 生成内容必须经过课程体系约束和教师可编辑确认。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="practice">
+          <div class="practice-layout">
+            <article class="panel chat-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Scenario Practice</p>
+                  <h2>AI 口语陪练: 在餐厅点餐</h2>
+                </div>
+                <span class="pill warning">YCT 3</span>
+              </div>
+
+              <div class="chat-window" id="chatWindow" aria-live="polite">
+                <div class="message ai">
+                  <span>AI</span>
+                  <p>你好 Alex。今天我们练习点餐。请用中文说：“我想要一杯果汁和一份面条。”</p>
+                </div>
+                <div class="message user">
+                  <span>Alex</span>
+                  <p>我想要一个果汁和一份面条。</p>
+                </div>
+                <div class="message ai feedback">
+                  <span>AI</span>
+                  <p>很好！这里“果汁”通常用量词“杯”。更自然的说法是：我想要一杯果汁和一份面条。</p>
+                </div>
+              </div>
+
+              <div class="chat-composer">
+                <input id="practiceInput" type="text" value="我想要一杯水和两份饺子。" aria-label="Practice answer" />
+                <button class="primary-btn" type="button" id="sendPractice">
+                  <i data-lucide="send"></i>
+                  发送
+                </button>
+              </div>
+            </article>
+
+            <aside class="panel compact-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Live Feedback</p>
+                  <h2>即时反馈</h2>
+                </div>
+              </div>
+              <div class="feedback-stack">
+                <div class="feedback-item good">
+                  <strong>词汇</strong>
+                  <p>“饺子”“水”使用正确。</p>
+                </div>
+                <div class="feedback-item focus">
+                  <strong>量词</strong>
+                  <p>“杯”“份”符合场景，建议加入价格问答。</p>
+                </div>
+                <div class="feedback-item next">
+                  <strong>下一步</strong>
+                  <p>请用“多少钱”完成追问。</p>
+                </div>
+              </div>
+              <button class="secondary-btn full" type="button" id="nextPrompt">
+                <i data-lucide="wand-sparkles"></i>
+                换一个练习任务
+              </button>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="teacher">
+          <div class="grid two-col teacher-grid">
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Teacher Copilot</p>
+                  <h2>下节课备课建议</h2>
+                </div>
+                <button class="small-btn" type="button" id="copyBrief">
+                  <i data-lucide="copy"></i>
+                  复制
+                </button>
+              </div>
+              <div class="brief-block" id="teacherBrief">
+                <h3>45 分钟课堂结构</h3>
+                <ul>
+                  <li>5 分钟: 快速复述上节课餐厅对话。</li>
+                  <li>12 分钟: 量词“杯/份/碗/张”图片选择练习。</li>
+                  <li>18 分钟: 老师扮演服务员，学生完成点餐、询价、表达偏好。</li>
+                  <li>10 分钟: 录音纠音，重点听三声变调。</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Content Generator</p>
+                  <h2>互动题目生成</h2>
+                </div>
+              </div>
+              <form class="generator-form" id="generatorForm">
+                <label>
+                  年龄
+                  <select>
+                    <option>8-10 岁</option>
+                    <option>11-13 岁</option>
+                    <option>成人</option>
+                  </select>
+                </label>
+                <label>
+                  学习目标
+                  <select>
+                    <option>餐厅点餐</option>
+                    <option>家庭介绍</option>
+                    <option>商务寒暄</option>
+                  </select>
+                </label>
+                <label>
+                  输出形式
+                  <select>
+                    <option>角色扮演</option>
+                    <option>选择题</option>
+                    <option>录音任务</option>
+                  </select>
+                </label>
+                <button class="primary-btn full" type="submit">
+                  <i data-lucide="file-plus-2"></i>
+                  生成课堂活动
+                </button>
+              </form>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="parent">
+          <div class="parent-layout">
+            <article class="panel report-preview">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Parent Report</p>
+                  <h2>家长版学习报告</h2>
+                </div>
+                <button class="small-btn" type="button" id="toneToggle">
+                  <i data-lucide="text-cursor-input"></i>
+                  切换语气
+                </button>
+              </div>
+              <div class="report-copy" id="reportCopy">
+                <p>Alex 今天能够用中文完成基础点餐对话，尤其在“我想要……”句型上进步明显。</p>
+                <p>需要继续练习的是量词，比如“一杯果汁”“一份面条”。本周建议每天完成 10 分钟 AI 陪练，重点做餐厅场景问答。</p>
+                <p>下节课老师会继续用角色扮演帮助 Alex 把句型说得更自然。</p>
+              </div>
+            </article>
+
+            <aside class="panel compact-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Send Options</p>
+                  <h2>发送设置</h2>
+                </div>
+              </div>
+              <div class="send-options">
+                <label><input type="checkbox" checked /> 英文摘要</label>
+                <label><input type="checkbox" checked /> 本周练习链接</label>
+                <label><input type="checkbox" /> 老师语音留言</label>
+              </div>
+              <button class="primary-btn full" type="button" id="sendReport">
+                <i data-lucide="mail-check"></i>
+                发送给家长
+              </button>
+              <p class="send-note" id="sendNote">预计节省老师 6-8 分钟。</p>
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

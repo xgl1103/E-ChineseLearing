@@ -1,0 +1,96 @@
+{
+  "data": [
+    {
+      "id": "page-course-center",
+      "title": "课程中心",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1784433600000,
+      "canvasData": {
+        "x": 620,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/course-center.html",
+        "interactions": [
+          {
+            "domId": "nav-goto-workspace",
+            "targetPageId": "page-workspace-overview",
+            "transitionLabel": "开始审核"
+          },
+          {
+            "domId": "filter-pending",
+            "targetPageId": "page-workspace-overview",
+            "hideEdge": true,
+            "transitionLabel": "需要处理筛选"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-workspace-overview",
+      "title": "复盘总览",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1784433600000,
+      "canvasData": {
+        "x": 620,
+        "y": 455,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/workspace-overview.html",
+        "interactions": [
+          {
+            "domId": "step-goto-review",
+            "targetPageId": "page-workspace-review",
+            "transitionLabel": "步骤条 → 待确认项"
+          },
+          {
+            "domId": "hero-goto-review",
+            "targetPageId": "page-workspace-review",
+            "transitionLabel": "开始审核"
+          },
+          {
+            "domId": "topnav-back-list",
+            "targetPageId": "page-course-center",
+            "transitionLabel": "返回列表"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-workspace-review",
+      "title": "待确认项",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1784433600000,
+      "canvasData": {
+        "x": 0,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/workspace-review.html",
+        "interactions": [
+          {
+            "domId": "step-goto-overview",
+            "targetPageId": "page-workspace-overview",
+            "transitionLabel": "步骤条 → 复盘总览"
+          },
+          {
+            "domId": "topnav-back-list",
+            "targetPageId": "page-course-center",
+            "transitionLabel": "返回列表"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": true,
+    "deviceType": "desktop",
+    "projectName": "AI Lesson Recorder · 暖色教育风重设计"
+  }
+}

@@ -1,0 +1,68 @@
+# ===== Secrets / Env =====
+.env
+.env.*
+!.env.example
+backend/.env
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# ===== Node.js =====
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.vite/
+*.tsbuildinfo
+.npm/
+.yarn/
+
+# ===== Logs =====
+*.log
+*.err.log
+*.out.log
+backend/uvicorn.err.log
+backend/uvicorn.out.log
+backend-bailian-smoke*.log
+backend-local*.log
+backend-smoke*.log
+frontend-local*.log
+frontend-smoke*.log
+
+# ===== Build / Cache =====
+*.tgz
+*.tar.gz
+*.zip
+.parcel-cache/
+.next/
+.cache/
+
+# ===== OS / Editor =====
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ===== Misc =====
+.docker/
+data/cache/

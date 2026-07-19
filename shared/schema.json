@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/e-chinese-learning/lesson.schema.json",
+  "title": "AI Lesson Recorder Lesson Object",
+  "type": "object",
+  "required": [
+    "lesson_id",
+    "metadata",
+    "transcripts",
+    "practice_clips",
+    "pronunciation_assessments",
+    "evidence",
+    "confidence_scores",
+    "draft_report",
+    "rule_validation_result",
+    "review_result",
+    "risk_highlights",
+    "teacher_review",
+    "final_reports",
+    "teacher_edit_log"
+  ],
+  "properties": {
+    "lesson_id": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "student_name",
+        "student_age",
+        "student_level",
+        "course_type",
+        "lesson_topic",
+        "lesson_duration_minutes",
+        "teacher_name",
+        "lesson_date"
+      ],
+      "properties": {
+        "student_name": { "type": "string" },
+        "student_age": { "type": "integer" },
+        "student_level": { "type": "string" },
+        "course_type": { "type": "string" },
+        "lesson_topic": { "type": "string" },
+        "lesson_duration_minutes": { "type": "integer" },
+        "teacher_name": { "type": "string" },
+        "lesson_date": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "transcripts": {
+      "type": "object",
+      "required": ["teacher", "student"],
+      "properties": {
+        "teacher": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/transcript_segment" }
+        },
+        "student": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/transcript_segment" }
+        }
+      }
+    },
+    "practice_clips": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/practice_clip" }
+    },
+    "pronunciation_assessments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pronunciation_assessment" }
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "knowledge_points": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidence_item" }
+        },
+        "teacher_questions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidence_item" }
+        },
+        "homework": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidence_item" }
+        },
+        "corrections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidence_item" }
+        },
+        "student_questions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidence_item" }
+        },
+        "pronunciation": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidence_item" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "confidence_scores": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": ["high", "medium", "low", "unknown"]
+      }
+    },
+    "draft_report": { "$ref": "#/$defs/report" },
+    "rule_validation_result": {
+      "type": "object",
+      "required": ["pass", "blocking_issues", "warnings"],
+      "properties": {
+        "pass": { "type": "boolean" },
+        "blocking_issues": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "review_result": {
+      "type": "object",
+      "required": ["pass", "score", "issues", "revision_instruction", "revision_count"],
+      "properties": {
+        "pass": { "type": "boolean" },
+        "score": { "type": "number" },
+        "issues": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "revision_instruction": { "type": "string" },
+        "revision_count": { "type": "integer" },
+        "rubric_scores": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "risk_highlights": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/risk_highlight" }
+    },
+    "teacher_review": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "final_reports": {
+      "type": "object",
+      "required": ["teacher", "student", "parent"],
+      "properties": {
+        "teacher": { "$ref": "#/$defs/final_report" },
+        "student": { "$ref": "#/$defs/final_report" },
+        "parent": { "$ref": "#/$defs/final_report" }
+      }
+    },
+    "teacher_edit_log": {
+      "type": "array",
+      "items": { "type": "object" }
+    }
+  },
+  "$defs": {
+    "transcript_segment": {
+      "type": "object",
+      "required": ["segment_id", "speaker", "start_time", "end_time", "text", "language_tags", "asr_confidence"],
+      "properties": {
+        "segment_id": { "type": "string" },
+        "speaker": { "enum": ["teacher", "student"] },
+        "start_time": { "type": "number" },
+        "end_time": { "type": "number" },
+        "text": { "type": "string" },
+        "language_tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "asr_confidence": { "type": "number" }
+      }
+    },
+    "practice_clip": {
+      "type": "object",
+      "required": [
+        "clip_id",
+        "student_segment_id",
+        "audio_uri",
+        "clip_start",
+        "clip_end",
+        "reference_text",
+        "reference_source",
+        "reference_confidence",
+        "should_assess_pronunciation"
+      ],
+      "properties": {
+        "clip_id": { "type": "string" },
+        "student_segment_id": { "type": "string" },
+        "audio_uri": { "type": "string" },
+        "clip_start": { "type": "number" },
+        "clip_end": { "type": "number" },
+        "reference_text": { "type": "string" },
+        "reference_source": { "type": "string" },
+        "reference_confidence": { "enum": ["high", "medium", "low"] },
+        "should_assess_pronunciation": { "type": "boolean" }
+      }
+    },
+    "pronunciation_assessment": {
+      "type": "object",
+      "required": [
+        "assessment_id",
+        "clip_id",
+        "reference_text",
+        "pronunciation_score",
+        "accuracy_score",
+        "fluency_score",
+        "completeness_score",
+        "prosody_score",
+        "low_score_words",
+        "model_confidence",
+        "teacher_confirmation_required"
+      ],
+      "properties": {
+        "assessment_id": { "type": "string" },
+        "clip_id": { "type": "string" },
+        "reference_text": { "type": "string" },
+        "pronunciation_score": { "type": "number" },
+        "accuracy_score": { "type": "number" },
+        "fluency_score": { "type": "number" },
+        "completeness_score": { "type": "number" },
+        "prosody_score": { "type": "number" },
+        "low_score_words": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["word", "accuracy_score", "error_type"],
+            "properties": {
+              "word": { "type": "string" },
+              "accuracy_score": { "type": "number" },
+              "error_type": { "type": "string" }
+            }
+          }
+        },
+        "model_confidence": { "enum": ["high", "medium", "low"] },
+        "teacher_confirmation_required": { "type": "boolean" }
+      }
+    },
+    "evidence_item": {
+      "type": "object",
+      "required": ["evidence_id", "type", "source_segment_ids", "timestamp", "claim", "confidence"],
+      "properties": {
+        "evidence_id": { "type": "string" },
+        "type": { "type": "string" },
+        "source_segment_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "timestamp": { "type": "string" },
+        "claim": { "type": "string" },
+        "confidence": { "enum": ["high", "medium", "low", "unknown"] }
+      },
+      "additionalProperties": true
+    },
+    "homework_item": {
+      "type": "object",
+      "required": ["homework_id", "title", "description", "type", "source_evidence_id", "confidence", "teacher_confirmed"],
+      "properties": {
+        "homework_id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string" },
+        "source_evidence_id": { "type": "string" },
+        "confidence": { "enum": ["high", "medium", "low"] },
+        "teacher_confirmed": { "type": "boolean" },
+        "teacher_confirmation_required": { "type": "boolean" },
+        "is_candidate": { "type": "boolean" }
+      }
+    },
+    "risk_highlight": {
+      "type": "object",
+      "required": ["risk_id", "level", "module", "message", "related_ids", "teacher_action"],
+      "properties": {
+        "risk_id": { "type": "string" },
+        "level": { "enum": ["high", "medium", "low"] },
+        "module": { "type": "string" },
+        "message": { "type": "string" },
+        "related_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "teacher_action": { "type": "string" }
+      }
+    },
+    "report": {
+      "type": "object",
+      "properties": {
+        "lesson_summary": { "type": "string" },
+        "knowledge_points": { "type": "array", "items": { "type": "object" } },
+        "teacher_questions": { "type": "array", "items": { "type": "object" } },
+        "student_questions": { "type": "array", "items": { "type": "object" } },
+        "corrections": { "type": "array", "items": { "type": "object" } },
+        "pronunciation_feedback": { "type": "array", "items": { "type": "object" } },
+        "homework_items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/homework_item" }
+        },
+        "student_assessment": { "type": "object" },
+        "next_lesson_suggestions": { "type": "array", "items": { "type": "object" } }
+      },
+      "additionalProperties": true
+    },
+    "final_report": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "audience": { "type": "string" },
+        "status": { "type": "string" },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["heading", "content"],
+            "properties": {
+              "heading": { "type": "string" },
+              "content": {}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程中心 · AI Lesson Recorder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style id="theme-vars">
+/* ============================================================
+   AI Lesson Recorder — Teacher Review Workspace
+   Design Direction: Warm, Friendly Education (教育温暖亲和风)
+   Brand Prefix: lr
+   ============================================================ */
+
+/* ---------- Color Tokens (Warm Education Palette) ---------- */
+:root {
+  /* Brand surfaces — warm cream / ivory */
+  --lr-background: #FBF6EC;          /* warm ivory page */
+  --lr-foreground: #3A3225;          /* warm ink brown */
+
+  --lr-card: #FFFFFF;               /* clean card */
+  --lr-card-foreground: #3A3225;
+
+  --lr-popover: #FFFFFF;
+  --lr-popover-foreground: #3A3225;
+
+  /* Primary — warm sage green (growth + education, friendly) */
+  --lr-primary: #5B9279;
+  --lr-primary-foreground: #FFFFFF;
+  --lr-primary-soft: #E6F0E9;       /* tinted surface for active/chips */
+  --lr-primary-press: #4D7E68;
+
+  /* Muted / neutral — warm taupe */
+  --lr-muted: #F2E9D8;              /* warm beige panel */
+  --lr-muted-foreground: #8A7C66;    /* warm taupe gray text */
+
+  /* Border — warm light beige */
+  --lr-border: #E8DCC6;
+  --lr-input: #E8DCC6;
+  --lr-ring: #5B9279;
+
+  /* Warm accent — peach (highlights, illustrations) */
+  --lr-accent: #E8A87C;
+  --lr-accent-soft: #FBE9DB;
+
+  /* Semantic — warm-tuned, not clinical */
+  --lr-warning: #E0A33E;            /* warm amber */
+  --lr-warning-soft: #FBEFD6;
+  --lr-danger: #E07856;              /* warm coral (risk) */
+  --lr-danger-soft: #FAE2D8;
+  --lr-success: #5B9279;
+  --lr-success-soft: #E6F0E9;
+  --lr-info: #6FA3B5;                /* muted warm teal-blue, used sparingly */
+  --lr-info-soft: #E2EEF1;
+
+  /* Radius scale — friendly, rounded */
+  --lr-radius-sm: 10px;
+  --lr-radius-md: 14px;
+  --lr-radius-lg: 20px;
+  --lr-radius-xl: 28px;
+
+  /* Shadows — soft, warm-tinted */
+  --lr-shadow-xs: 0 1px 2px rgba(58, 50, 37, 0.05);
+  --lr-shadow-sm: 0 2px 8px rgba(58, 50, 37, 0.06);
+  --lr-shadow-md: 0 6px 20px rgba(58, 50, 37, 0.08);
+  --lr-shadow-lg: 0 14px 38px rgba(58, 50, 37, 0.10);
+
+  /* Typography */
+  --lr-font-sans: "Plus Jakarta Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --lr-font-display: "Plus Jakarta Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --lr-font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+/* ---------- Tailwind theme inline mapping ---------- */
+@theme inline {
+  --color-background: var(--lr-background);
+  --color-foreground: var(--lr-foreground);
+  --color-card: var(--lr-card);
+  --color-card-foreground: var(--lr-card-foreground);
+  --color-popover: var(--lr-popover);
+  --color-popover-foreground: var(--lr-popover-foreground);
+  --color-primary: var(--lr-primary);
+  --color-primary-foreground: var(--lr-primary-foreground);
+  --color-muted: var(--lr-muted);
+  --color-muted-foreground: var(--lr-muted-foreground);
+  --color-border: var(--lr-border);
+  --color-input: var(--lr-input);
+  --color-ring: var(--lr-ring);
+  --color-accent: var(--lr-accent);
+  --color-warning: var(--lr-warning);
+  --color-danger: var(--lr-danger);
+  --color-success: var(--lr-success);
+  --color-info: var(--lr-info);
+
+  --font-sans: var(--lr-font-sans);
+  --font-display: var(--lr-font-display);
+  --font-mono: var(--lr-font-mono);
+
+  --radius-sm: var(--lr-radius-sm);
+  --radius-md: var(--lr-radius-md);
+  --radius-lg: var(--lr-radius-lg);
+  --radius-xl: var(--lr-radius-xl);
+}
+
+/* ---------- Semantic aliases for fill-html-head.mjs ---------- */
+:root {
+  --background: var(--lr-background);
+  --foreground: var(--lr-foreground);
+  --card: var(--lr-card);
+  --card-foreground: var(--lr-card-foreground);
+  --popover: var(--lr-popover);
+  --popover-foreground: var(--lr-popover-foreground);
+  --primary: var(--lr-primary);
+  --primary-foreground: var(--lr-primary-foreground);
+  --muted: var(--lr-muted);
+  --muted-foreground: var(--lr-muted-foreground);
+  --border: var(--lr-border);
+  --input: var(--lr-input);
+  --ring: var(--lr-ring);
+  --radius-sm: var(--lr-radius-sm);
+  --radius-md: var(--lr-radius-md);
+  --radius-lg: var(--lr-radius-lg);
+  --radius-xl: var(--lr-radius-xl);
+}
+
+/* ---------- Base ---------- */
+html { font-family: var(--lr-font-sans); }
+body {
+  background: var(--lr-background);
+  color: var(--lr-foreground);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--lr-background);
+    --color-foreground: var(--lr-foreground);
+    --color-card: var(--lr-card);
+    --color-card-foreground: var(--lr-card-foreground);
+    --color-popover: var(--lr-popover);
+    --color-popover-foreground: var(--lr-popover-foreground);
+    --color-primary: var(--lr-primary);
+    --color-primary-foreground: var(--lr-primary-foreground);
+    --color-muted: var(--lr-muted);
+    --color-muted-foreground: var(--lr-muted-foreground);
+    --color-accent: var(--lr-accent);
+    --color-border: var(--lr-border);
+    --color-input: var(--lr-input);
+    --color-ring: var(--lr-ring);
+    --radius-sm: var(--lr-radius-sm);
+    --radius-md: var(--lr-radius-md);
+    --radius-lg: var(--lr-radius-lg);
+    --radius-xl: var(--lr-radius-xl);
+  }
+  @layer base {
+    body { background: var(--lr-background); color: var(--lr-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--lr-background); }
+      .text-background { color: var(--lr-background); }
+      .border-background { border-color: var(--lr-background); }
+      .ring-background { --tw-ring-color: var(--lr-background); }
+      .bg-foreground { background-color: var(--lr-foreground); }
+      .text-foreground { color: var(--lr-foreground); }
+      .border-foreground { border-color: var(--lr-foreground); }
+      .ring-foreground { --tw-ring-color: var(--lr-foreground); }
+      .bg-card { background-color: var(--lr-card); }
+      .text-card { color: var(--lr-card); }
+      .border-card { border-color: var(--lr-card); }
+      .ring-card { --tw-ring-color: var(--lr-card); }
+      .bg-card-foreground { background-color: var(--lr-card-foreground); }
+      .text-card-foreground { color: var(--lr-card-foreground); }
+      .border-card-foreground { border-color: var(--lr-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--lr-card-foreground); }
+      .bg-popover { background-color: var(--lr-popover); }
+      .text-popover { color: var(--lr-popover); }
+      .border-popover { border-color: var(--lr-popover); }
+      .ring-popover { --tw-ring-color: var(--lr-popover); }
+      .bg-popover-foreground { background-color: var(--lr-popover-foreground); }
+      .text-popover-foreground { color: var(--lr-popover-foreground); }
+      .border-popover-foreground { border-color: var(--lr-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--lr-popover-foreground); }
+      .bg-primary { background-color: var(--lr-primary); }
+      .text-primary { color: var(--lr-primary); }
+      .border-primary { border-color: var(--lr-primary); }
+      .ring-primary { --tw-ring-color: var(--lr-primary); }
+      .bg-primary-foreground { background-color: var(--lr-primary-foreground); }
+      .text-primary-foreground { color: var(--lr-primary-foreground); }
+      .border-primary-foreground { border-color: var(--lr-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--lr-primary-foreground); }
+      .bg-muted { background-color: var(--lr-muted); }
+      .text-muted { color: var(--lr-muted); }
+      .border-muted { border-color: var(--lr-muted); }
+      .ring-muted { --tw-ring-color: var(--lr-muted); }
+      .bg-muted-foreground { background-color: var(--lr-muted-foreground); }
+      .text-muted-foreground { color: var(--lr-muted-foreground); }
+      .border-muted-foreground { border-color: var(--lr-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--lr-muted-foreground); }
+      .bg-accent { background-color: var(--lr-accent); }
+      .text-accent { color: var(--lr-accent); }
+      .border-accent { border-color: var(--lr-accent); }
+      .ring-accent { --tw-ring-color: var(--lr-accent); }
+      .bg-border { background-color: var(--lr-border); }
+      .text-border { color: var(--lr-border); }
+      .border-border { border-color: var(--lr-border); }
+      .ring-border { --tw-ring-color: var(--lr-border); }
+      .bg-input { background-color: var(--lr-input); }
+      .text-input { color: var(--lr-input); }
+      .border-input { border-color: var(--lr-input); }
+      .ring-input { --tw-ring-color: var(--lr-input); }
+      .bg-ring { background-color: var(--lr-ring); }
+      .text-ring { color: var(--lr-ring); }
+      .border-ring { border-color: var(--lr-ring); }
+      .ring-ring { --tw-ring-color: var(--lr-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+      <!-- ===== 1. Top Nav (warm cream/white, sticky) ===== -->
+      <nav class="sticky top-0 z-40 h-16 flex items-center justify-between px-6 md:px-10"
+           style="background: var(--lr-card); border-bottom: 1px solid var(--lr-border); box-shadow: var(--lr-shadow-sm);">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+               style="background: var(--lr-primary-soft);">
+            <i data-lucide="graduation-cap" class="w-5 h-5" style="color: var(--lr-primary); stroke-width: 2;"></i>
+          </div>
+          <div class="flex flex-col leading-tight min-w-0">
+            <span class="text-[15px] font-bold truncate" style="color: var(--lr-foreground);">AI Lesson Recorder</span>
+            <span class="text-[12px] truncate" style="color: var(--lr-muted-foreground);">老师审核工作台</span>
+          </div>
+        </div>
+        <button class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition hover:opacity-80"
+                style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-muted-foreground);"
+                aria-label="切换语言">
+          <i data-lucide="languages" class="w-4 h-4" style="stroke-width: 2;"></i>
+        </button>
+      </nav>
+
+      <!-- ===== Page container (max-width 1280, 40px gutters) ===== -->
+      <div class="mx-auto" style="max-width: 1280px; padding: 36px 40px 64px;">
+
+        <!-- ===== 2. Page Header ===== -->
+        <header class="flex items-end justify-between gap-6 flex-wrap">
+          <div class="min-w-0 flex-1" style="min-width: 280px;">
+            <p class="text-[13px] mb-2" style="color: var(--lr-muted-foreground);">老师工作台</p>
+            <h1 class="text-[30px] font-bold leading-tight"
+                style="color: var(--lr-foreground); text-wrap: balance; word-break: keep-all; overflow-wrap: break-word;">
+              课程中心
+            </h1>
+            <p class="text-[15px] mt-2"
+               style="color: var(--lr-muted-foreground); max-width: 640px;">
+              优先处理待审核课程，完成后再发送学生和家长报告。待审核课程已按优先级排在前面。
+            </p>
+          </div>
+          <button class="shrink-0 inline-flex items-center gap-2 px-5 h-11 rounded-[14px] text-[14px] font-semibold transition hover:opacity-90"
+                  style="background: var(--lr-primary); color: var(--lr-primary-foreground); box-shadow: var(--lr-shadow-sm);">
+            <i data-lucide="plus" class="w-4 h-4" style="stroke-width: 2;"></i>
+            <span>新建课程</span>
+          </button>
+        </header>
+
+        <!-- ===== 3. Overview Band — 3 metric tiles ===== -->
+        <section class="mt-9 grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <!-- Tile 1: 待审核 -->
+          <div class="lr-lift flex items-center gap-4 p-5 rounded-[20px]"
+               style="background: var(--lr-card); border: 1px solid var(--lr-border); box-shadow: var(--lr-shadow-sm);">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                 style="background: var(--lr-warning-soft);">
+              <i data-lucide="clock" class="w-5 h-5" style="color: var(--lr-warning); stroke-width: 2;"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[28px] font-bold leading-none whitespace-nowrap" style="color: var(--lr-foreground);">2</div>
+              <div class="text-[13px] mt-1.5 truncate" style="color: var(--lr-muted-foreground);">待审核课程</div>
+            </div>
+          </div>
+          <!-- Tile 2: 已发送 -->
+          <div class="lr-lift flex items-center gap-4 p-5 rounded-[20px]"
+               style="background: var(--lr-card); border: 1px solid var(--lr-border); box-shadow: var(--lr-shadow-sm);">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                 style="background: var(--lr-success-soft);">
+              <i data-lucide="check-circle-2" class="w-5 h-5" style="color: var(--lr-success); stroke-width: 2;"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[28px] font-bold leading-none whitespace-nowrap" style="color: var(--lr-foreground);">1</div>
+              <div class="text-[13px] mt-1.5 truncate" style="color: var(--lr-muted-foreground);">已发送报告</div>
+            </div>
+          </div>
+          <!-- Tile 3: 本周课时 -->
+          <div class="lr-lift flex items-center gap-4 p-5 rounded-[20px]"
+               style="background: var(--lr-card); border: 1px solid var(--lr-border); box-shadow: var(--lr-shadow-sm);">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                 style="background: var(--lr-accent-soft);">
+              <i data-lucide="calendar-days" class="w-5 h-5" style="color: var(--lr-accent); stroke-width: 2;"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[28px] font-bold leading-none whitespace-nowrap" style="color: var(--lr-foreground);">4</div>
+              <div class="text-[13px] mt-1.5 truncate" style="color: var(--lr-muted-foreground);">本周课时</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Hint Strip -->
+        <div class="mt-4 flex items-center gap-2.5 p-3 rounded-[12px]"
+             style="background: var(--lr-warning-soft);">
+          <i data-lucide="info" class="w-4 h-4 shrink-0" style="color: var(--lr-warning); stroke-width: 2;"></i>
+          <p class="text-[13px]" style="color: var(--lr-foreground);">
+            优先处理待审核课程，完成后即可发送学生与家长报告。
+          </p>
+        </div>
+
+        <!-- ===== 4. Filter Bar ===== -->
+        <section class="mt-9 flex items-center justify-between gap-4 flex-wrap">
+          <div class="flex items-center gap-2 flex-wrap">
+            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] text-[13px] font-medium whitespace-nowrap"
+                    style="background: var(--lr-primary-soft); color: var(--lr-primary);">
+              <span class="w-1.5 h-1.5 rounded-full" style="background: var(--lr-primary);"></span>
+              <span>全部课程</span>
+            </button>
+            <button data-dom-id="filter-pending"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] text-[13px] font-medium whitespace-nowrap transition hover:opacity-80"
+                    style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-muted-foreground);">
+              <span>需要处理</span>
+              <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold"
+                    style="background: var(--lr-warning-soft); color: var(--lr-warning);">2</span>
+            </button>
+            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] text-[13px] font-medium whitespace-nowrap transition hover:opacity-80"
+                    style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-muted-foreground);">
+              <span>已发送</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2"
+                 style="color: var(--lr-muted-foreground); stroke-width: 2;"></i>
+              <input type="text" placeholder="搜索学生或课程…"
+                     class="h-10 w-full sm:w-64 pl-9 pr-3 rounded-[10px] text-[13px] focus:outline-none"
+                     style="background: var(--lr-muted); border: 1px solid transparent; color: var(--lr-foreground);">
+            </div>
+            <button class="inline-flex items-center gap-2 h-10 px-3 rounded-[10px] text-[13px] font-medium whitespace-nowrap transition hover:opacity-80"
+                    style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+              <i data-lucide="arrow-down-up" class="w-4 h-4" style="stroke-width: 2; color: var(--lr-muted-foreground);"></i>
+              <span>最近</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ===== 5. Course Grid (2×2) ===== -->
+        <section class="mt-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- Card 1: Alex Chen — PRIMARY CTA — nav-goto-workspace on button -->
+          <article class="lr-lift p-6 rounded-[20px]"
+                   style="background: var(--lr-card); border: 1px solid var(--lr-border); border-left: 4px solid var(--lr-primary); box-shadow: var(--lr-shadow-sm);">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-[14px] font-semibold"
+                     style="background: var(--lr-primary-soft); color: var(--lr-primary);">AC</div>
+                <div class="min-w-0">
+                  <span class="text-[16px] font-bold truncate block" style="color: var(--lr-foreground);">Alex Chen</span>
+                  <span class="text-[13px] truncate block" style="color: var(--lr-muted-foreground);">10岁 · YCT 3</span>
+                </div>
+              </div>
+              <span class="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[12px] font-medium whitespace-nowrap shrink-0"
+                    style="background: var(--lr-warning-soft); color: var(--lr-foreground);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background: var(--lr-warning);"></span>
+                待审核
+              </span>
+            </div>
+            <h3 class="text-[15px] font-semibold mt-4 truncate" style="color: var(--lr-foreground);">
+              餐厅点餐 · 量词与价格
+            </h3>
+            <div class="flex items-center gap-3 mt-2 text-[13px] flex-wrap" style="color: var(--lr-muted-foreground);">
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="calendar" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>2026-07-18
+              </span>
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="clock" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>30分钟
+              </span>
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="user-round" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>王老师
+              </span>
+            </div>
+            <div class="mt-3">
+              <span class="inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-[11px] font-medium whitespace-nowrap"
+                    style="background: var(--lr-warning-soft); color: var(--lr-warning);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background: var(--lr-warning);"></span>
+                7 待确认
+              </span>
+            </div>
+            <button data-dom-id="nav-goto-workspace"
+                    class="mt-5 w-full inline-flex items-center justify-center gap-2 h-11 rounded-[14px] text-[14px] font-semibold transition hover:opacity-90"
+                    style="background: var(--lr-primary); color: var(--lr-primary-foreground); box-shadow: var(--lr-shadow-sm);">
+              <span>开始审核</span>
+              <i data-lucide="arrow-right" class="w-4 h-4" style="stroke-width: 2;"></i>
+            </button>
+          </article>
+
+          <!-- Card 2: Emma Smith -->
+          <article class="lr-lift p-6 rounded-[20px]"
+                   style="background: var(--lr-card); border: 1px solid var(--lr-border); border-left: 4px solid var(--lr-accent); box-shadow: var(--lr-shadow-sm);">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-[14px] font-semibold"
+                     style="background: var(--lr-accent-soft); color: var(--lr-accent);">ES</div>
+                <div class="min-w-0">
+                  <span class="text-[16px] font-bold truncate block" style="color: var(--lr-foreground);">Emma Smith</span>
+                  <span class="text-[13px] truncate block" style="color: var(--lr-muted-foreground);">10岁 · YCT 3</span>
+                </div>
+              </div>
+              <span class="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[12px] font-medium whitespace-nowrap shrink-0"
+                    style="background: var(--lr-warning-soft); color: var(--lr-foreground);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background: var(--lr-warning);"></span>
+                待审核
+              </span>
+            </div>
+            <h3 class="text-[15px] font-semibold mt-4 truncate" style="color: var(--lr-foreground);">
+              问路与方向 · 方位词
+            </h3>
+            <div class="flex items-center gap-3 mt-2 text-[13px] flex-wrap" style="color: var(--lr-muted-foreground);">
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="calendar" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>2026-07-16
+              </span>
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="clock" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>25分钟
+              </span>
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="user-round" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>王老师
+              </span>
+            </div>
+            <button class="mt-[44px] w-full inline-flex items-center justify-center gap-2 h-11 rounded-[14px] text-[14px] font-semibold transition hover:opacity-90"
+                    style="background: var(--lr-primary); color: var(--lr-primary-foreground); box-shadow: var(--lr-shadow-sm);">
+              <span>开始审核</span>
+              <i data-lucide="arrow-right" class="w-4 h-4" style="stroke-width: 2;"></i>
+            </button>
+          </article>
+
+          <!-- Card 3: Tom Brown — 已发送 -->
+          <article class="lr-lift p-6 rounded-[20px]"
+                   style="background: var(--lr-card); border: 1px solid var(--lr-border); border-left: 4px solid var(--lr-info); box-shadow: var(--lr-shadow-sm);">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-[14px] font-semibold"
+                     style="background: var(--lr-info-soft); color: var(--lr-info);">TB</div>
+                <div class="min-w-0">
+                  <span class="text-[16px] font-bold truncate block" style="color: var(--lr-foreground);">Tom Brown</span>
+                  <span class="text-[13px] truncate block" style="color: var(--lr-muted-foreground);">10岁 · YCT 3</span>
+                </div>
+              </div>
+              <span class="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[12px] font-medium whitespace-nowrap shrink-0"
+                    style="background: var(--lr-success-soft); color: var(--lr-foreground);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background: var(--lr-success);"></span>
+                已发送
+              </span>
+            </div>
+            <h3 class="text-[15px] font-semibold mt-4 truncate" style="color: var(--lr-foreground);">
+              购物对话 · 数字与单位
+            </h3>
+            <div class="flex items-center gap-3 mt-2 text-[13px] flex-wrap" style="color: var(--lr-muted-foreground);">
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="calendar" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>2026-07-14
+              </span>
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="clock" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>28分钟
+              </span>
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="user-round" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>李老师
+              </span>
+            </div>
+            <button class="mt-[44px] w-full inline-flex items-center justify-center gap-2 h-11 rounded-[14px] text-[14px] font-semibold transition hover:opacity-80"
+                    style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+              <i data-lucide="file-text" class="w-4 h-4" style="stroke-width: 2;"></i>
+              <span>查看报告</span>
+            </button>
+          </article>
+
+          <!-- Card 4: Sophie Lee — 已发送 -->
+          <article class="lr-lift p-6 rounded-[20px]"
+                   style="background: var(--lr-card); border: 1px solid var(--lr-border); border-left: 4px solid var(--lr-warning); box-shadow: var(--lr-shadow-sm);">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-[14px] font-semibold"
+                     style="background: var(--lr-warning-soft); color: var(--lr-warning);">SL</div>
+                <div class="min-w-0">
+                  <span class="text-[16px] font-bold truncate block" style="color: var(--lr-foreground);">Sophie Lee</span>
+                  <span class="text-[13px] truncate block" style="color: var(--lr-muted-foreground);">10岁 · YCT 3</span>
+                </div>
+              </div>
+              <span class="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[12px] font-medium whitespace-nowrap shrink-0"
+                    style="background: var(--lr-success-soft); color: var(--lr-foreground);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background: var(--lr-success);"></span>
+                已发送
+              </span>
+            </div>
+            <h3 class="text-[15px] font-semibold mt-4 truncate" style="color: var(--lr-foreground);">
+              家庭成员 · 称谓与介绍
+            </h3>
+            <div class="flex items-center gap-3 mt-2 text-[13px] flex-wrap" style="color: var(--lr-muted-foreground);">
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="calendar" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>2026-07-12
+              </span>
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="clock" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>22分钟
+              </span>
+              <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                <i data-lucide="user-round" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>王老师
+              </span>
+            </div>
+            <button class="mt-[44px] w-full inline-flex items-center justify-center gap-2 h-11 rounded-[14px] text-[14px] font-semibold transition hover:opacity-80"
+                    style="background: var(--lr-card); border: 1px solid var(--lr-border); color: var(--lr-foreground);">
+              <i data-lucide="file-text" class="w-4 h-4" style="stroke-width: 2;"></i>
+              <span>查看报告</span>
+            </button>
+          </article>
+
+        </section>
+
+        <!-- ===== 6. Footer Hint ===== -->
+        <section class="mt-7 flex items-center gap-3 p-4 rounded-[14px] flex-wrap"
+                 style="background: var(--lr-muted);">
+          <i data-lucide="upload-cloud" class="w-5 h-5 shrink-0" style="color: var(--lr-muted-foreground); stroke-width: 2;"></i>
+          <p class="text-[13px] flex-1 min-w-0" style="color: var(--lr-muted-foreground);">
+            需要导入新录音？从课程详情页上传音频，或直接用浏览器录音。
+          </p>
+          <a class="inline-flex items-center gap-1 text-[13px] font-medium whitespace-nowrap transition hover:opacity-80"
+             style="color: var(--lr-primary);">
+            了解录音规范
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5" style="stroke-width: 2;"></i>
+          </a>
+        </section>
+
+      </div>
+    </main>
+    <style>
+      .lr-lift { transition: transform .2s ease, box-shadow .2s ease; }
+      .lr-lift:hover { transform: translateY(-3px); box-shadow: var(--lr-shadow-md); }
+    </style>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
