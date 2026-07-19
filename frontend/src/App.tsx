@@ -13,8 +13,10 @@ import {
   MessageSquareText,
   Mic2,
   Pencil,
+  Play,
   Plus,
   Send,
+  Search,
   Settings2,
   ShieldCheck,
   Sparkles,
@@ -27,6 +29,7 @@ import { mockLesson } from "./lib/mockLesson";
 import { createT, LangContext, useT, type Lang, type TranslationKey } from "./lib/i18n";
 import type {
   Audience,
+  AnalysisJob,
   AudioSource,
   AudioIngestResult,
   Confidence,
@@ -132,9 +135,25 @@ function defaultNewLesson(metadata: LessonObject["metadata"]): NewLessonDraft {
 
 function courseStatusKey(status: CourseListItem["status"]): TranslationKey {
   if (status === "processing") return "statusProcessing";
+  if (status === "failed") return "statusFailed";
   if (status === "ready_to_send") return "statusReadyToSend";
   if (status === "sent") return "statusSent";
   return "statusReviewRequired";
+}
+
+/** 提取学生名首字母作为头像占位 */
+function getInitials(name: string): string {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/** 根据课程主题映射到课程卡的色调 token（暖色教育风四色调） */
+function courseTopicTone(topic: string): "primary" | "accent" | "info" | "warning" {
+  const hash = topic.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  const tones = ["primary", "accent", "info", "warning"] as const;
+  return tones[hash % tones.length];
 }
 
 function audienceLabelKey(audience: Audience): TranslationKey {
@@ -668,6 +687,9 @@ async function requestJson(path: string, signal: AbortSignal | undefined, init?:
 async function requestApi(path: string, signal: AbortSignal | undefined, init?: RequestInit) {
   const directUrl = `${DIRECT_API_BASE}${path}`;
   const proxyUrl = `${PROXY_API_BASE}${path}`;
+  if (!DIRECT_API_BASE || directUrl === proxyUrl) {
+    return requestJson(proxyUrl, signal, init);
+  }
   try {
     return await requestJson(directUrl, signal, init);
   } catch (directError) {
@@ -693,6 +715,22 @@ async function ingestDemoAudio(formData: FormData) {
     method: "POST",
     body: formData
   });
+}
+
+async function enqueueDemoAudio(formData: FormData): Promise<AnalysisJob> {
+  return requestApi("/api/lessons/demo/audio-ingest/jobs", undefined, {
+    method: "POST",
+    body: formData
+  });
+}
+
+async function getAnalysisJobs(signal?: AbortSignal): Promise<AnalysisJob[]> {
+  const payload = await requestApi("/api/analysis-jobs", signal);
+  return Array.isArray(payload.jobs) ? payload.jobs : [];
+}
+
+async function getAnalysisJob(jobId: string, signal?: AbortSignal): Promise<AnalysisJob> {
+  return requestApi(`/api/analysis-jobs/${jobId}`, signal);
 }
 
 function formatFileSize(value: number | undefined) {
@@ -753,6 +791,9 @@ export function App() {
   const [teacherAudioFile, setTeacherAudioFile] = useState<File | null>(null);
   const [studentAudioFile, setStudentAudioFile] = useState<File | null>(null);
   const [audioProcessing, setAudioProcessing] = useState(false);
+  const [analysisJobs, setAnalysisJobs] = useState<AnalysisJob[]>([]);
+  const [displayedJobProgress, setDisplayedJobProgress] = useState<Record<string, number>>({});
+  const [openingJobId, setOpeningJobId] = useState<string | null>(null);
   const [recordingTrack, setRecordingTrack] = useState<RecordingTrack | null>(null);
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>("idle");
   const [teacherRecording, setTeacherRecording] = useState<RecordedTrack | null>(null);
@@ -802,6 +843,82 @@ export function App() {
     };
   }, [teacherRecording?.objectUrl, studentRecording?.objectUrl]);
 
+  useEffect(() => {
+    let disposed = false;
+    let requestInFlight = false;
+
+    async function refreshAnalysisJobs() {
+      if (requestInFlight) return;
+      requestInFlight = true;
+      try {
+        const jobs = await getAnalysisJobs();
+        if (!disposed) setAnalysisJobs(jobs);
+      } catch {
+        // The main lesson API remains usable even if background-job polling is temporarily unavailable.
+      } finally {
+        requestInFlight = false;
+      }
+    }
+
+    void refreshAnalysisJobs();
+    const intervalId = window.setInterval(refreshAnalysisJobs, 1000);
+    return () => {
+      disposed = true;
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    const stageCeilings: Record<string, number> = {
+      queued: 10,
+      audio: 18,
+      asr: 30,
+      transcript: 39,
+      evidence: 53,
+      writer: 67,
+      confidence: 72,
+      validation: 81,
+      reviewer: 93,
+      revision: 91,
+      teacher_gate: 98
+    };
+
+    function advanceDisplayedProgress() {
+      setDisplayedJobProgress((current) => {
+        const next: Record<string, number> = {};
+
+        analysisJobs.forEach((job) => {
+          const actual = Math.max(0, Math.min(100, job.progress));
+          if (job.status === "completed") {
+            next[job.job_id] = 100;
+            return;
+          }
+          if (job.status === "failed") {
+            next[job.job_id] = actual;
+            return;
+          }
+
+          const displayed = current[job.job_id] ?? actual;
+          const ceiling = Math.max(actual, stageCeilings[job.stage] ?? Math.min(98, actual + 8));
+          if (displayed < actual) {
+            next[job.job_id] = Math.min(actual, displayed + Math.max(1.2, (actual - displayed) * 0.28));
+            return;
+          }
+          const remaining = ceiling - displayed;
+          next[job.job_id] = remaining <= 0
+            ? displayed
+            : Math.min(ceiling, displayed + Math.max(0.22, remaining * 0.035));
+        });
+
+        return next;
+      });
+    }
+
+    advanceDisplayedProgress();
+    const animationId = window.setInterval(advanceDisplayedProgress, 400);
+    return () => window.clearInterval(animationId);
+  }, [analysisJobs]);
+
   const allHomeworkConfirmed = homework.every((item) => item.teacher_confirmed);
   const allRisksConfirmed = risks.every((risk) => risk.confirmed);
   const unresolvedReviewRisks = risks.filter((risk) => !risk.confirmed && (risk.level === "high" || risk.level === "medium"));
@@ -822,10 +939,36 @@ export function App() {
     : teacherGateConfirmed
       ? "ready_to_send"
       : "review_required";
+  const backgroundCourses = useMemo<CourseListItem[]>(
+    () =>
+      analysisJobs.map((job) => ({
+        lessonId: job.lesson_id,
+        studentName: job.metadata.student_name,
+        topic: job.metadata.lesson_topic,
+        date: job.metadata.lesson_date,
+        duration: job.metadata.lesson_duration_minutes,
+        status:
+          job.status === "failed"
+            ? "failed"
+            : job.status === "completed"
+              ? job.lesson_id === lesson.lesson_id
+                ? currentCourseStatus
+                : "review_required"
+              : "processing",
+        teacher: job.metadata.teacher_name,
+        interactive: job.status === "completed",
+        jobId: job.job_id,
+        progress: displayedJobProgress[job.job_id] ?? job.progress,
+        stage: job.stage,
+        statusMessage: job.message,
+        error: job.error
+      })),
+    [analysisJobs, currentCourseStatus, displayedJobProgress, lesson.lesson_id]
+  );
   const courseList = useMemo<CourseListItem[]>(
-    () => [
-      {
-        lessonId: DEMO_LESSON_ID,
+    () => {
+      const activeCourse: CourseListItem = {
+        lessonId: lesson.lesson_id || DEMO_LESSON_ID,
         studentName: lesson.metadata.student_name,
         topic: lesson.metadata.lesson_topic,
         date: lesson.metadata.lesson_date,
@@ -833,17 +976,25 @@ export function App() {
         status: currentCourseStatus,
         teacher: lesson.metadata.teacher_name,
         interactive: true
-      },
-      ...archivedCourses
-    ],
-    [currentCourseStatus, lesson.metadata]
+      };
+      const includeActiveCourse = !backgroundCourses.some(
+        (course) => course.lessonId === activeCourse.lessonId
+      );
+      return [
+        ...backgroundCourses,
+        ...(includeActiveCourse ? [activeCourse] : []),
+        ...archivedCourses
+      ];
+    },
+    [backgroundCourses, currentCourseStatus, lesson]
   );
   const filteredCourses = courseList.filter((course) => {
     if (courseFilter === "all") return true;
     if (courseFilter === "sent") return course.status === "sent";
-    return course.status === "review_required" || course.status === "ready_to_send";
+    return course.status === "processing" || course.status === "failed" || course.status === "review_required" || course.status === "ready_to_send";
   });
   const pendingCourseCount = courseList.filter((course) => course.status === "review_required").length;
+  const processingCourseCount = courseList.filter((course) => course.status === "processing").length;
   const completedCourseCount = courseList.filter((course) => course.status === "sent").length;
   const totalReviewItems = risks.length + homework.length;
   const reviewedItemCount = confirmedRiskCount + confirmedHomeworkCount;
@@ -1194,10 +1345,23 @@ export function App() {
     const hasUploadedAudio = Boolean(teacherAudioFile && studentAudioFile);
     const hasRecordedAudio = Boolean(teacherRecording && studentRecording);
     if (!recordingConsent || (audioSource === "upload" && !hasUploadedAudio) || (audioSource === "record" && !hasRecordedAudio)) return;
-    await processAudioUpload(useSample, newLesson, sampleId);
+    const formData = buildAudioFormData(useSample, newLesson, sampleId);
+    setAudioProcessing(true);
+    try {
+      const job = await enqueueDemoAudio(formData);
+      setAnalysisJobs((current) => [job, ...current.filter((item) => item.job_id !== job.job_id)]);
+      setCourseFilter("all");
+      setView("list");
+      setRecordingConsent(false);
+      setLoadError(null);
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : "Unable to create analysis job");
+    } finally {
+      setAudioProcessing(false);
+    }
   }
 
-  async function processAudioUpload(
+  function buildAudioFormData(
     useSample = false,
     metadata?: NewLessonDraft,
     selectedSampleId: DemoSampleId = "standard"
@@ -1219,7 +1383,15 @@ export function App() {
       formData.append("use_sample", "true");
       formData.append("sample_id", selectedSampleId);
     }
+    return formData;
+  }
 
+  async function processAudioUpload(
+    useSample = false,
+    metadata?: NewLessonDraft,
+    selectedSampleId: DemoSampleId = "standard"
+  ) {
+    const formData = buildAudioFormData(useSample, metadata, selectedSampleId);
     setAudioProcessing(true);
     try {
       const ingestPayload = await ingestDemoAudio(formData);
@@ -1256,6 +1428,36 @@ export function App() {
     }
   }
 
+  async function openCourse(course: CourseListItem) {
+    if (course.status === "processing" || course.status === "failed") return;
+    if (!course.jobId) {
+      setView("workspace");
+      return;
+    }
+
+    setOpeningJobId(course.jobId);
+    try {
+      const job = await getAnalysisJob(course.jobId);
+      if (job.status !== "completed" || !job.result) return;
+      const completedLesson = mergeLessonPayload(mockLesson, job.result);
+      setLesson(completedLesson);
+      setHomework(normalizeHomework(completedLesson.draft_report.homework_items));
+      setRisks(normalizeRisks(completedLesson.risk_highlights));
+      setConfirmed(false);
+      setReportSent(false);
+      setDraftEdits({});
+      setActiveTab("overview");
+      setWorkflowExpanded(false);
+      setDataSource("api");
+      setLoadError(null);
+      setView("workspace");
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : "Unable to load completed lesson");
+    } finally {
+      setOpeningJobId(null);
+    }
+  }
+
   const productReport = buildProductReport(lesson, activeAudience, lang, homework, teacherNote, t("noSummary"));
   const audioIngest = lesson.audio_ingest;
 
@@ -1279,7 +1481,11 @@ export function App() {
         {/* ===== Top Navigation Bar ===== */}
         <nav className="top-nav">
           <div className="nav-left">
-            <div className="brand-mark">AI</div>
+            <img
+              className="brand-mark"
+              src="/brand/echineselearning-logo.png"
+              alt="eChineseLearning"
+            />
             <div className="brand-text">
               <strong>{t("brandTitle")}</strong>
               <span>{t("brandSubtitle")}</span>
@@ -1381,6 +1587,10 @@ export function App() {
 
             <div className="course-overview-band">
               <div>
+                <strong>{processingCourseCount}</strong>
+                <span>{t("processingLessons")}</span>
+              </div>
+              <div>
                 <strong>{pendingCourseCount}</strong>
                 <span>{t("pendingLessons")}</span>
               </div>
@@ -1406,22 +1616,30 @@ export function App() {
 
             <div className="course-grid">
               {filteredCourses.map((course) => {
+                const initials = getInitials(course.studentName);
+                const avatarTone = courseTopicTone(course.topic);
                 return (
                   <div
-                    className={`course-card ${course.interactive ? "interactive" : "archive"}`}
+                    className={`course-card tone-${avatarTone} ${course.interactive ? "interactive" : "archive"}`}
                     key={course.lessonId}
+                    data-lesson-id={course.lessonId}
+                    data-job-id={course.jobId}
                   >
+                    <span className="course-card-stripe" aria-hidden="true" />
                     <div className="course-card-header">
-                      <strong>{course.studentName}</strong>
+                      <div className="course-card-id">
+                        <span className="course-card-avatar">{initials}</span>
+                        <div className="course-card-id-text">
+                          <strong>{course.studentName}</strong>
+                          <span className="course-card-topic">{course.topic}</span>
+                        </div>
+                      </div>
                       <span className={`course-status-badge ${course.status}`}>
+                        <span className="status-dot" aria-hidden="true" />
                         {t(courseStatusKey(course.status))}
                       </span>
                     </div>
                     <div className="course-card-body">
-                      <div className="course-card-row">
-                        <span className="course-card-label">{t("topic")}</span>
-                        <span>{course.topic}</span>
-                      </div>
                       <div className="course-card-row">
                         <span className="course-card-label">{t("lessonDate")}</span>
                         <span>{course.date}</span>
@@ -1435,12 +1653,51 @@ export function App() {
                         <span>{course.teacher}</span>
                       </div>
                     </div>
+                    {course.status === "processing" && (
+                      <div className="course-job-progress" aria-live="polite">
+                        <div className="course-job-progress-copy">
+                          <span>{course.statusMessage || t("analysisQueued")}</span>
+                          <strong>{Math.round(course.progress ?? 0)}%</strong>
+                        </div>
+                        <div
+                          className="course-job-progress-track"
+                          role="progressbar"
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-valuenow={Math.round(course.progress ?? 0)}
+                        >
+                          <span style={{ width: `${Math.max(4, course.progress ?? 0)}%` }} />
+                        </div>
+                        <small>{t("backgroundProcessingHint")}</small>
+                      </div>
+                    )}
+                    {course.status === "failed" && (
+                      <div className="course-job-error">
+                        <AlertTriangle size={15} />
+                        <span>{course.error || t("analysisFailedHint")}</span>
+                      </div>
+                    )}
                     <div className="course-card-actions">
-                      {course.interactive ? (
+                      {course.status === "processing" ? (
+                        <span className="course-card-muted-action">{t("safeToBrowse")}</span>
+                      ) : course.status === "failed" ? (
+                        <button className="course-card-open-btn" type="button" onClick={openNewLesson}>
+                          {t("createAgain")}
+                        </button>
+                      ) : course.interactive ? (
                         <>
                           {course.status !== "sent" && (
-                            <button className="course-card-open-btn" type="button" onClick={() => setView("workspace")}>
-                              {course.status === "review_required" ? t("startReview") : t("openLesson")}
+                            <button
+                              className="course-card-open-btn"
+                              type="button"
+                              disabled={openingJobId === course.jobId}
+                              onClick={() => void openCourse(course)}
+                            >
+                              {openingJobId === course.jobId
+                                ? t("loading")
+                                : course.status === "review_required"
+                                  ? t("startReview")
+                                  : t("openLesson")}
                             </button>
                           )}
                           {(course.status === "ready_to_send" || course.status === "sent") && (
@@ -1457,7 +1714,7 @@ export function App() {
                             </button>
                           )}
                           {course.status === "sent" && (
-                            <button className="course-card-open-btn" type="button" onClick={() => setView("workspace")}>
+                            <button className="course-card-open-btn" type="button" onClick={() => void openCourse(course)}>
                               {t("openLesson")}
                             </button>
                           )}
@@ -1470,6 +1727,19 @@ export function App() {
                 );
               })}
             </div>
+            {filteredCourses.length === 0 && (
+              <div className="empty-state amber" style={{ marginTop: 16 }}>
+                <div className="empty-state-icon">
+                  <Search size={26} />
+                </div>
+                <h3>{lang === "zh" ? "没有匹配的课程" : "No matching courses"}</h3>
+                <p>
+                  {lang === "zh"
+                    ? "当前筛选条件下没有课程，试试切换其他筛选标签。"
+                    : "No courses match the current filter. Try switching to another filter."}
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -1716,18 +1986,31 @@ export function App() {
         <>
         {/* ===== Step Bar ===== */}
         <nav className="step-bar">
-          {stepDefs.map((step, i) => (
-            <button
-              key={step.id}
-              className={`step-item ${activeTab === step.id ? "active" : ""} ${stepDoneMap[step.id] ? "done" : ""}`}
-              type="button"
-              onClick={() => setActiveTab(step.id)}
-            >
-              <span className="step-num">{stepDoneMap[step.id] ? <CheckCircle2 size={12} /> : i + 1}</span>
-              {t(step.labelKey)}
-              {i < stepDefs.length - 1 && <span className="step-arrow">→</span>}
-            </button>
-          ))}
+          <div className="step-bar-track">
+            {stepDefs.map((step, i) => {
+              const isDone = stepDoneMap[step.id];
+              const isActive = activeTab === step.id;
+              const stateClass = isActive ? "active" : isDone ? "done" : "todo";
+              return (
+                <div className="step-bar-item" key={step.id}>
+                  <button
+                    className={`step-node ${stateClass}`}
+                    type="button"
+                    onClick={() => setActiveTab(step.id)}
+                    aria-label={t(step.labelKey)}
+                  >
+                    <span className="step-node-circle">
+                      {isDone && !isActive ? <CheckCircle2 size={14} /> : i + 1}
+                    </span>
+                    <span className="step-node-label">{t(step.labelKey)}</span>
+                  </button>
+                  {i < stepDefs.length - 1 && (
+                    <span className={`step-connector ${isDone ? "filled" : ""}`} aria-hidden="true" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </nav>
 
         {/* ===== Compact Metrics Row ===== */}
@@ -1769,7 +2052,7 @@ export function App() {
           ) : (
             <>
               {/* ===== Tab: Overview ===== */}
-              <div className={activeTab === "overview" ? "" : "tab-hidden"}>
+              <div className={activeTab === "overview" ? "workspace-tab" : "tab-hidden"}>
                 <section className="review-summary-band">
                   <div className="review-summary-copy">
                     <span className="page-eyebrow">{t("aiAnalysisReady")}</span>
@@ -1813,20 +2096,24 @@ export function App() {
                     <div className="transcript-list">
                       {mergedTranscript.map((segment) => (
                         <article
-                          className={`transcript-item ${segment.speaker} ${
+                          className={`transcript-item ${
                             activeSegmentIds.has(segment.segment_id) ? "highlighted" : ""
                           }`}
                           id={`segment-${segment.segment_id}`}
                           key={segment.segment_id}
                         >
                           <div className="transcript-meta">
-                            <span>{segment.speaker === "teacher" ? t("teacherSpeaker") : t("studentSpeaker")}</span>
-                            <strong>{timeRange(segment.start_time, segment.end_time)}</strong>
+                            <span>{timeRange(segment.start_time, segment.end_time)}</span>
                           </div>
-                          <p>{segment.text}</p>
-                          {segment.asr_confidence <= 0.9 && (
-                            <span className={confidenceClass("medium")}>{t("transcriptNeedsReview")}</span>
-                          )}
+                          <div>
+                            <span className={`transcript-speaker-chip ${segment.speaker}`}>
+                              {segment.speaker === "teacher" ? t("teacherSpeaker") : t("studentSpeaker")}
+                            </span>
+                            <p className={`transcript-line ${segment.speaker}`}>{segment.text}</p>
+                            {segment.asr_confidence <= 0.9 && (
+                              <span className={confidenceClass("medium")}>{t("transcriptNeedsReview")}</span>
+                            )}
+                          </div>
                         </article>
                       ))}
                     </div>
@@ -1867,7 +2154,7 @@ export function App() {
               </div>
 
               {/* ===== Tab: Draft ===== */}
-              <div className={activeTab === "draft" ? "" : "tab-hidden"}>
+              <div className={activeTab === "draft" ? "workspace-tab" : "tab-hidden"}>
                 <div className="draft-grid">
                   <section className="panel draft-panel">
                     <PanelTitle icon={<FileText size={18} />} title={t("aiDraftReport")} />
@@ -1967,22 +2254,43 @@ export function App() {
                     <PanelTitle icon={<AlertTriangle size={18} />} title={t("riskHighlights")}>
                       <span className="panel-count">{confirmedRiskCount}/{risks.length}</span>
                     </PanelTitle>
+                    {risks.length > 0 && sortedRisks.every((r) => r.confirmed || r.dismissed) ? (
+                      <div className="empty-state">
+                        <div className="empty-state-icon">
+                          <CheckCircle2 size={30} />
+                        </div>
+                        <h3>{lang === "zh" ? "全部确认完成" : "All confirmed"}</h3>
+                        <p>
+                          {lang === "zh"
+                            ? "所有需要老师判断的内容已处理完毕，可以进入下一步生成最终报告。"
+                            : "All items needing your judgment are resolved. You can proceed to generate the final report."}
+                        </p>
+                      </div>
+                    ) : (
                     <div className="risk-list">
                       {sortedRisks.map((risk) => {
                         const copy = riskProductCopy(risk, lang);
                         const riskEvidenceIds = risk.related_ids.filter((id) => evidenceById.has(id));
                         return (
                           <article className={`risk-item ${risk.level} ${risk.confirmed ? "confirmed" : ""} ${risk.dismissed ? "dismissed" : ""}`} key={risk.risk_id}>
-                          <input
-                            type="checkbox"
-                            checked={Boolean(risk.confirmed)}
-                            onChange={() => confirmRisk(risk.risk_id)}
-                            aria-label={copy.title}
-                          />
+                          <label className="risk-checkbox-wrap">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(risk.confirmed)}
+                              onChange={() => confirmRisk(risk.risk_id)}
+                              aria-label={copy.title}
+                            />
+                            <span className="risk-checkbox" aria-hidden="true">
+                              {Boolean(risk.confirmed) && <CheckCircle2 size={12} />}
+                            </span>
+                          </label>
                           <div>
                             <div className="risk-header">
                               <strong>{copy.title}</strong>
-                              <span className={confidenceClass(risk.level)}>{confidenceLabelText(risk.level, t)}</span>
+                              <span className={`risk-badge ${confidenceClass(risk.level)}`}>
+                                <span className="status-dot" aria-hidden="true" />
+                                {confidenceLabelText(risk.level, t)}
+                              </span>
                             </div>
                             <textarea
                               className="risk-message-edit"
@@ -2020,6 +2328,7 @@ export function App() {
                         );
                       })}
                     </div>
+                    )}
                   </section>
                 )}
 
@@ -2130,7 +2439,7 @@ export function App() {
               </div>
 
               {/* ===== Tab: Final Report ===== */}
-              <div className={activeTab === "report" ? "" : "tab-hidden"}>
+              <div className={activeTab === "report" ? "workspace-tab" : "tab-hidden"}>
                 <section className="panel">
                   <div className="final-header">
                     <PanelTitle icon={<UserRoundCheck size={18} />} title={t("finalReportPreview")} />
@@ -2548,7 +2857,14 @@ function EvidenceLinks({
             onClick={() => onFocus(id)}
             onMouseEnter={() => onFocus(id)}
           >
-            {evidence.timestamp} · {t("classEvidence")}
+            <span className="evidence-play" aria-hidden="true">
+              <Play size={9} />
+            </span>
+            <span className="evidence-time">{evidence.timestamp}</span>
+            <span className="evidence-wave" aria-hidden="true">
+              <span /><span /><span />
+            </span>
+            <span className="evidence-label">{t("classEvidence")}</span>
           </button>
         );
       })}

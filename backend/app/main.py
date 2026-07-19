@@ -6,9 +6,11 @@ import os
 import re
 import shutil
 import subprocess
+import threading
+import uuid
 from copy import deepcopy
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -72,6 +74,8 @@ LESSON_STORE: dict[str, Lesson] = {}
 LESSON_LOAD_INFO: dict[str, dict[str, Any]] = {}
 LESSON_GRAPH_TRACE: dict[str, list[dict[str, Any]]] = {}
 LESSON_WORKFLOW_SUMMARY: dict[str, dict[str, Any]] = {}
+ANALYSIS_JOBS: dict[str, dict[str, Any]] = {}
+ANALYSIS_JOB_LOCK = threading.Lock()
 
 _RAW_DEMO_LESSON: Lesson | None = None
 
@@ -182,11 +186,13 @@ def _run_mock_analysis(
     lesson: Lesson,
     include_pronunciation: bool = True,
     requested_agent_mode: str = "mock",
+    progress_callback: Callable[[str, int], None] | None = None,
 ) -> Lesson:
     graph_state = run_analysis_graph(
         lesson,
         include_pronunciation=include_pronunciation,
         requested_agent_mode="real" if requested_agent_mode == "real" else "mock",
+        progress_callback=progress_callback,
     )
     analyzed = graph_state.lesson
     LESSON_STORE[analyzed.lesson_id] = analyzed
@@ -835,6 +841,197 @@ def _maybe_apply_real_audio_pipeline(
     return lesson, asr_provider, "mock", " ".join(fallback_reasons)
 
 
+def _with_lesson_id(lesson: Lesson, lesson_id: str) -> Lesson:
+    lesson_data = lesson.model_dump(by_alias=True)
+    lesson_data["lesson_id"] = lesson_id
+    return Lesson.model_validate(lesson_data)
+
+
+def _build_audio_ingest_response(
+    *,
+    analyzed: Lesson,
+    teacher_file: dict[str, Any],
+    student_file: dict[str, Any],
+    mode: str,
+    use_sample: bool,
+    sample_id: str,
+    input_source: str,
+    asr_mode: str,
+    pronunciation_mode: str,
+    fallback_reason: str,
+) -> dict[str, Any]:
+    workflow = LESSON_WORKFLOW_SUMMARY.get(analyzed.lesson_id, {})
+    audio_ingest = _audio_ingest_metadata(
+        teacher_file=teacher_file,
+        student_file=student_file,
+        lesson=analyzed,
+        mode=mode,
+        use_sample=use_sample,
+        sample_id=sample_id,
+        input_source=input_source,
+        asr_mode=asr_mode,
+        pronunciation_mode=pronunciation_mode,
+        fallback_reason=fallback_reason,
+    )
+    lesson_payload = analyzed.model_dump(by_alias=True)
+    return {
+        **lesson_payload,
+        **LESSON_LOAD_INFO.get(analyzed.lesson_id, {}),
+        "audio_ingest": audio_ingest,
+        "agent_mode": workflow.get("agent_mode", "mock"),
+        "model_provider": workflow.get("model_provider", "mock"),
+        "model_name": workflow.get("model_name", ""),
+        "llm_trace": workflow.get("llm_trace", []),
+        "schema_validation": workflow.get("schema_validation", {}),
+        "fallback_reason": workflow.get("fallback_reason", ""),
+        "revision_count": workflow.get("revision_count", analyzed.review_result.revision_count),
+        "revision_history": workflow.get("revision_history", []),
+        "stop_reason": workflow.get("stop_reason", ""),
+        "rule_validation_result": analyzed.rule_validation_result.model_dump(by_alias=True),
+        "review_result": analyzed.review_result.model_dump(by_alias=True),
+        "workflow_trace": workflow.get("workflow_trace", LESSON_GRAPH_TRACE.get(analyzed.lesson_id, [])),
+        "graph_trace": workflow.get("graph_trace", LESSON_GRAPH_TRACE.get(analyzed.lesson_id, [])),
+    }
+
+
+def _update_analysis_job(job_id: str, **changes: Any) -> None:
+    with ANALYSIS_JOB_LOCK:
+        job = ANALYSIS_JOBS.get(job_id)
+        if job is None:
+            return
+        job.update(changes)
+        job["updated_at"] = utc_now_iso()
+
+
+def _public_analysis_job(job: dict[str, Any], *, include_result: bool) -> dict[str, Any]:
+    public = deepcopy(job)
+    if not include_result:
+        public.pop("result", None)
+    return public
+
+
+def _analysis_progress_callback(job_id: str) -> Callable[[str, int], None]:
+    phase_map = {
+        "transcript_node": ("transcript", 32, "正在整理课堂转写"),
+        "evidence_node": ("evidence", 40, "正在提取知识点与课堂证据"),
+        "writer_node": ("writer", 55, "写作 Agent 正在生成课程报告"),
+        "confidence_node": ("confidence", 68, "正在计算置信度与风险项"),
+        "rule_validator_node": ("validation", 74, "正在校验报告规则"),
+        "reviewer_node": ("reviewer", 84, "评审 Agent 正在审核报告"),
+        "writer_revision": ("revision", 72, "报告未通过，写作 Agent 正在优化"),
+        "teacher_review_gate_node": ("teacher_gate", 94, "正在生成老师审核清单"),
+    }
+
+    def report(node: str, revision_count: int) -> None:
+        stage, base_progress, message = phase_map.get(node, ("analysis", 50, "AI 正在分析课程"))
+        if node == "writer_node" and revision_count > 0:
+            stage = "revision"
+            base_progress = min(88, 70 + revision_count * 7)
+            message = f"写作 Agent 正在进行第 {revision_count} 次优化"
+        elif node == "reviewer_node" and revision_count > 0:
+            base_progress = min(92, 82 + revision_count * 4)
+            message = f"评审 Agent 正在审核第 {revision_count} 次优化结果"
+        _update_analysis_job(
+            job_id,
+            status="running",
+            stage=stage,
+            progress=base_progress,
+            message=message,
+            revision_count=revision_count,
+        )
+
+    return report
+
+
+def _run_audio_analysis_job(
+    *,
+    job_id: str,
+    lesson: Lesson,
+    teacher_file: dict[str, Any],
+    student_file: dict[str, Any],
+    mode: str,
+    agent_mode: str,
+    include_pronunciation: bool,
+    use_sample: bool,
+    sample_id: str,
+    input_source: str,
+) -> None:
+    try:
+        _update_analysis_job(
+            job_id,
+            status="running",
+            stage="audio",
+            progress=12,
+            message="正在绑定老师与学生音轨",
+            started_at=utc_now_iso(),
+        )
+        _update_analysis_job(
+            job_id,
+            stage="asr",
+            progress=20,
+            message="正在进行语音识别与发音片段处理",
+        )
+        lesson, asr_mode, pronunciation_mode, fallback_reason = _maybe_apply_real_audio_pipeline(
+            lesson=lesson,
+            teacher_file=teacher_file,
+            student_file=student_file,
+            include_pronunciation=include_pronunciation,
+        )
+        lesson.teacher_edit_log.append(
+            {
+                "event": "background_audio_ingest",
+                "created_at": utc_now_iso(),
+                "teacher_audio": teacher_file,
+                "student_audio": student_file,
+                "include_pronunciation": include_pronunciation,
+                "use_sample": use_sample,
+                "sample_id": sample_id if use_sample else None,
+                "input_source": input_source,
+                "asr_mode": asr_mode,
+                "pronunciation_mode": pronunciation_mode,
+                "fallback_reason": fallback_reason,
+                "agent_mode": agent_mode,
+            }
+        )
+        analyzed = _run_mock_analysis(
+            lesson,
+            include_pronunciation=include_pronunciation,
+            requested_agent_mode=agent_mode,
+            progress_callback=_analysis_progress_callback(job_id),
+        )
+        result = _build_audio_ingest_response(
+            analyzed=analyzed,
+            teacher_file=teacher_file,
+            student_file=student_file,
+            mode=mode,
+            use_sample=use_sample,
+            sample_id=sample_id,
+            input_source=input_source,
+            asr_mode=asr_mode,
+            pronunciation_mode=pronunciation_mode,
+            fallback_reason=fallback_reason,
+        )
+        _update_analysis_job(
+            job_id,
+            status="completed",
+            stage="completed",
+            progress=100,
+            message="AI 分析已完成，等待老师审核",
+            completed_at=utc_now_iso(),
+            result=result,
+        )
+    except Exception as error:
+        logger.exception("Background analysis job %s failed.", job_id)
+        _update_analysis_job(
+            job_id,
+            status="failed",
+            stage="failed",
+            message="分析失败，请重新创建课程或稍后重试",
+            error=str(error),
+            completed_at=utc_now_iso(),
+        )
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -881,6 +1078,124 @@ def analyze_demo_lesson(request: AnalyzeRequest | None = None) -> dict[str, Any]
         "workflow_trace": workflow.get("workflow_trace", LESSON_GRAPH_TRACE.get(analyzed.lesson_id, [])),
         "graph_trace": workflow.get("graph_trace", LESSON_GRAPH_TRACE.get(analyzed.lesson_id, [])),
     }
+
+
+@app.get("/api/analysis-jobs")
+def list_analysis_jobs() -> dict[str, Any]:
+    with ANALYSIS_JOB_LOCK:
+        jobs = [
+            _public_analysis_job(job, include_result=False)
+            for job in ANALYSIS_JOBS.values()
+        ]
+    jobs.sort(key=lambda item: str(item.get("created_at", "")), reverse=True)
+    return {"jobs": jobs}
+
+
+@app.get("/api/analysis-jobs/{job_id}")
+def get_analysis_job(job_id: str) -> dict[str, Any]:
+    with ANALYSIS_JOB_LOCK:
+        job = ANALYSIS_JOBS.get(job_id)
+        if job is None:
+            raise HTTPException(status_code=404, detail=f"Analysis job {job_id} not found")
+        return _public_analysis_job(job, include_result=True)
+
+
+@app.post("/api/lessons/demo/audio-ingest/jobs", status_code=202)
+async def enqueue_demo_audio_analysis(
+    teacher_audio: UploadFile | None = File(default=None),
+    student_audio: UploadFile | None = File(default=None),
+    mode: str = Form(default="mock"),
+    agent_mode: str = Form(default="mock"),
+    include_pronunciation: bool = Form(default=True),
+    use_sample: bool = Form(default=False),
+    sample_id: str = Form(default="standard"),
+    input_source: str = Form(default="upload"),
+    lesson_metadata: str | None = Form(default=None),
+) -> dict[str, Any]:
+    if mode != "mock":
+        raise HTTPException(status_code=400, detail="Only mock audio ingest is implemented in this demo stage.")
+    if sample_id not in {"standard", "extended"}:
+        raise HTTPException(status_code=400, detail="sample_id must be either 'standard' or 'extended'.")
+    if input_source not in {"sample", "upload", "record"}:
+        raise HTTPException(status_code=400, detail="input_source must be one of: sample, upload, record.")
+    if agent_mode not in {"mock", "real"}:
+        raise HTTPException(status_code=400, detail="agent_mode must be either 'mock' or 'real'.")
+
+    use_sample = use_sample or (teacher_audio is None and student_audio is None)
+    input_source = "sample" if use_sample else input_source
+    if not use_sample and (teacher_audio is None or student_audio is None):
+        missing_tracks = [
+            track
+            for track, file in (("teacher_audio", teacher_audio), ("student_audio", student_audio))
+            if file is None
+        ]
+        raise HTTPException(status_code=400, detail=f"Missing required audio track(s): {', '.join(missing_tracks)}.")
+
+    job_id = f"job_{uuid.uuid4().hex[:12]}"
+    lesson_id = f"lesson_{uuid.uuid4().hex[:12]}"
+    lesson = _get_extended_demo_lesson() if use_sample and sample_id == "extended" else _get_raw_demo_lesson()
+    lesson = _with_lesson_id(_apply_lesson_metadata(lesson, lesson_metadata), lesson_id)
+    teacher_file = (
+        _sample_file_summary("teacher", sample_id)
+        if use_sample and teacher_audio is None
+        else await _uploaded_file_summary(
+            teacher_audio,
+            "teacher",
+            lesson_id=lesson.lesson_id,
+            input_source=input_source,
+        )
+    )
+    student_file = (
+        _sample_file_summary("student", sample_id)
+        if use_sample and student_audio is None
+        else await _uploaded_file_summary(
+            student_audio,
+            "student",
+            lesson_id=lesson.lesson_id,
+            input_source=input_source,
+        )
+    )
+    created_at = utc_now_iso()
+    job = {
+        "job_id": job_id,
+        "lesson_id": lesson.lesson_id,
+        "status": "queued",
+        "stage": "queued",
+        "progress": 5,
+        "message": "课程已创建，等待 AI 分析",
+        "revision_count": 0,
+        "error": "",
+        "created_at": created_at,
+        "updated_at": created_at,
+        "started_at": None,
+        "completed_at": None,
+        "metadata": lesson.metadata.model_dump(),
+        "input_source": input_source,
+        "sample_id": sample_id if use_sample else None,
+        "result": None,
+    }
+    with ANALYSIS_JOB_LOCK:
+        ANALYSIS_JOBS[job_id] = job
+
+    worker = threading.Thread(
+        target=_run_audio_analysis_job,
+        kwargs={
+            "job_id": job_id,
+            "lesson": lesson,
+            "teacher_file": teacher_file,
+            "student_file": student_file,
+            "mode": mode,
+            "agent_mode": agent_mode,
+            "include_pronunciation": include_pronunciation,
+            "use_sample": use_sample,
+            "sample_id": sample_id,
+            "input_source": input_source,
+        },
+        name=f"analysis-{job_id}",
+        daemon=True,
+    )
+    worker.start()
+    return _public_analysis_job(job, include_result=False)
 
 
 @app.post("/api/lessons/demo/audio-ingest")
@@ -977,11 +1292,10 @@ async def ingest_demo_audio(
         include_pronunciation=include_pronunciation,
         requested_agent_mode=agent_mode,
     )
-    workflow = LESSON_WORKFLOW_SUMMARY.get(analyzed.lesson_id, {})
-    audio_ingest = _audio_ingest_metadata(
+    return _build_audio_ingest_response(
+        analyzed=analyzed,
         teacher_file=teacher_file,
         student_file=student_file,
-        lesson=analyzed,
         mode=mode,
         use_sample=use_sample,
         sample_id=sample_id,
@@ -990,25 +1304,6 @@ async def ingest_demo_audio(
         pronunciation_mode=pronunciation_mode,
         fallback_reason=fallback_reason,
     )
-    lesson_payload = analyzed.model_dump(by_alias=True)
-    return {
-        **lesson_payload,
-        **LESSON_LOAD_INFO.get(analyzed.lesson_id, {}),
-        "audio_ingest": audio_ingest,
-        "agent_mode": workflow.get("agent_mode", "mock"),
-        "model_provider": workflow.get("model_provider", "mock"),
-        "model_name": workflow.get("model_name", ""),
-        "llm_trace": workflow.get("llm_trace", []),
-        "schema_validation": workflow.get("schema_validation", {}),
-        "fallback_reason": workflow.get("fallback_reason", ""),
-        "revision_count": workflow.get("revision_count", analyzed.review_result.revision_count),
-        "revision_history": workflow.get("revision_history", []),
-        "stop_reason": workflow.get("stop_reason", ""),
-        "rule_validation_result": analyzed.rule_validation_result.model_dump(by_alias=True),
-        "review_result": analyzed.review_result.model_dump(by_alias=True),
-        "workflow_trace": workflow.get("workflow_trace", LESSON_GRAPH_TRACE.get(analyzed.lesson_id, [])),
-        "graph_trace": workflow.get("graph_trace", LESSON_GRAPH_TRACE.get(analyzed.lesson_id, [])),
-    }
 
 
 @app.post("/api/lessons/{lesson_id}/teacher-review")

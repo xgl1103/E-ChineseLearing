@@ -3,7 +3,7 @@ export type Speaker = "teacher" | "student";
 export type Audience = "teacher" | "student" | "parent";
 export type WorkflowStatus = "pending" | "running" | "passed" | "warning" | "failed";
 export type AgentMode = "mock" | "real_llm" | "fallback" | string;
-export type LessonLifecycleStatus = "processing" | "review_required" | "ready_to_send" | "sent";
+export type LessonLifecycleStatus = "processing" | "review_required" | "ready_to_send" | "sent" | "failed";
 export type CourseFilter = "all" | "review_required" | "sent";
 export type AudioSource = "upload" | "sample" | "record";
 export type DemoSampleId = "standard" | "extended";
@@ -17,6 +17,32 @@ export interface CourseListItem {
   status: LessonLifecycleStatus;
   teacher: string;
   interactive?: boolean;
+  jobId?: string;
+  progress?: number;
+  stage?: string;
+  statusMessage?: string;
+  error?: string;
+}
+
+export type AnalysisJobStatus = "queued" | "running" | "completed" | "failed";
+
+export interface AnalysisJob {
+  job_id: string;
+  lesson_id: string;
+  status: AnalysisJobStatus;
+  stage: string;
+  progress: number;
+  message: string;
+  revision_count: number;
+  error?: string;
+  created_at: string;
+  updated_at: string;
+  started_at?: string | null;
+  completed_at?: string | null;
+  metadata: Metadata;
+  input_source: AudioSource;
+  sample_id?: DemoSampleId | null;
+  result?: LessonObject | null;
 }
 
 export interface NewLessonDraft {

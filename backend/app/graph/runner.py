@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Literal
+from typing import Callable, Literal
 
 from backend.app.graph.nodes import (
     confidence_node,
@@ -68,6 +68,7 @@ def run_analysis_graph(
     include_pronunciation: bool = True,
     requested_agent_mode: Literal["mock", "real"] = "mock",
     max_revisions: int = 2,
+    progress_callback: Callable[[str, int], None] | None = None,
 ) -> GraphState:
     state = GraphState(
         lesson=deepcopy(lesson),
@@ -87,20 +88,34 @@ def run_analysis_graph(
         },
     )
     for node in (transcript_node, evidence_node):
+        if progress_callback:
+            progress_callback(node.__name__, state.revision_count)
         state = node(state)
 
     while True:
+        if progress_callback:
+            progress_callback("writer_node", state.revision_count)
         state = writer_node(state)
+        if progress_callback:
+            progress_callback("confidence_node", state.revision_count)
         state = confidence_node(state)
+        if progress_callback:
+            progress_callback("rule_validator_node", state.revision_count)
         state = rule_validator_node(state)
+        if progress_callback:
+            progress_callback("reviewer_node", state.revision_count)
         state = reviewer_node(state)
         state = route_after_review(state)
 
         if state.route == "writer_revision":
+            if progress_callback:
+                progress_callback("writer_revision", state.revision_count)
             continue
         break
 
     if state.route == "teacher_review_gate":
+        if progress_callback:
+            progress_callback("teacher_review_gate_node", state.revision_count)
         state = teacher_review_gate_node(state)
     elif state.route == "manual_review":
         state.add_event(

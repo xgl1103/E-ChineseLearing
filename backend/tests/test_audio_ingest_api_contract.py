@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import time
+
 from fastapi.testclient import TestClient
 import pytest
 
-from backend.app.main import app
+from backend.app.main import ANALYSIS_JOBS, ANALYSIS_JOB_LOCK, app
 
 
 client = TestClient(app)
@@ -13,6 +15,8 @@ client = TestClient(app)
 def disable_real_audio_providers(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("ASR_PROVIDER", "")
     monkeypatch.setenv("PRON_PROVIDER", "")
+    with ANALYSIS_JOB_LOCK:
+        ANALYSIS_JOBS.clear()
 
 
 def test_audio_ingest_sample_extended() -> None:
@@ -88,3 +92,43 @@ def test_audio_ingest_rejects_non_audio_file() -> None:
 
     assert response.status_code == 400
     assert response.json()["detail"] == "teacher_audio must be an audio file."
+
+
+def test_background_audio_analysis_job_reports_progress_and_result() -> None:
+    response = client.post(
+        "/api/lessons/demo/audio-ingest/jobs",
+        data={
+            "mode": "mock",
+            "agent_mode": "mock",
+            "input_source": "sample",
+            "use_sample": "true",
+            "sample_id": "standard",
+            "lesson_metadata": '{"studentName":"Async Student","topic":"Async Demo"}',
+        },
+    )
+
+    assert response.status_code == 202
+    queued = response.json()
+    assert queued["job_id"].startswith("job_")
+    assert queued["lesson_id"].startswith("lesson_")
+    assert queued["status"] in {"queued", "running"}
+
+    job_id = queued["job_id"]
+    deadline = time.monotonic() + 5
+    job = queued
+    while time.monotonic() < deadline and job["status"] not in {"completed", "failed"}:
+        time.sleep(0.02)
+        job_response = client.get(f"/api/analysis-jobs/{job_id}")
+        assert job_response.status_code == 200
+        job = job_response.json()
+
+    assert job["status"] == "completed"
+    assert job["progress"] == 100
+    assert job["result"]["lesson_id"] == queued["lesson_id"]
+    assert job["result"]["metadata"]["student_name"] == "Async Student"
+
+    jobs_response = client.get("/api/analysis-jobs")
+    assert jobs_response.status_code == 200
+    listed = jobs_response.json()["jobs"]
+    assert listed[0]["job_id"] == job_id
+    assert "result" not in listed[0]

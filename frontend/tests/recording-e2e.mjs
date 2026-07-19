@@ -114,11 +114,16 @@ async function main() {
 
     await page.locator('input[type="checkbox"]').check();
     await page.getByRole("button", { name: "创建并开始分析" }).click();
+
+    const backgroundCourse = page.locator(".course-card[data-job-id]").first();
+    await backgroundCourse.waitFor({ timeout: 10000 });
     await page.waitForFunction(
-      () => document.body.innerText.includes("AI 分析已完成"),
+      () => document.querySelector(".course-card[data-job-id] .course-status-badge.review_required") !== null,
       undefined,
-      { timeout: 15000 },
+      { timeout: 30000 },
     );
+    await backgroundCourse.locator(".course-card-open-btn").click();
+    await page.locator(".audio-ingest-panel").waitFor({ timeout: 10000 });
 
     const pageText = await page.locator("body").innerText();
     if (!pageText.includes("课堂录音") || !pageText.includes("老师音轨") || !pageText.includes("学生音轨")) {
